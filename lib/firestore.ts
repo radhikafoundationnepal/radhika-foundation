@@ -54,3 +54,126 @@ export async function updateNews(
 export async function deleteNews(id: string) {
   await deleteDoc(doc(db, "news", id));
 }
+const noticesCollection = collection(db, "notices");
+
+export async function getNotices() {
+  const q = query(
+    noticesCollection,
+    orderBy("createdAt", "desc")
+  );
+
+  const snapshot = await getDocs(q);
+
+  return snapshot.docs.map((item) => ({
+    id: item.id,
+    ...item.data(),
+  }));
+}
+
+export async function addNotice(
+  title: string,
+  description: string,
+  published: boolean
+) {
+  await addDoc(noticesCollection, {
+    title,
+    description,
+    published,
+    createdAt: serverTimestamp(),
+  });
+}
+
+export async function updateNotice(
+  id: string,
+  title: string,
+  description: string,
+  published: boolean
+) {
+  await updateDoc(doc(db, "notices", id), {
+    title,
+    description,
+    published,
+    updatedAt: serverTimestamp(),
+  });
+}
+
+export async function deleteNotice(id: string) {
+  await deleteDoc(doc(db, "notices", id));
+}
+export async function getPublishedNotices() {
+  const q = query(
+    noticesCollection,
+    orderBy("createdAt", "desc")
+  );
+
+  const snapshot = await getDocs(q);
+
+  return snapshot.docs
+    .map((item) => ({
+      id: item.id,
+      ...item.data(),
+    }))
+    .filter((item) => item.published === true);
+}
+const galleryCollection = collection(db, "gallery");
+
+export async function getGallery() {
+  const q = query(
+    galleryCollection,
+    orderBy("createdAt", "desc")
+  );
+
+  const snapshot = await getDocs(q);
+
+  return snapshot.docs.map((item) => ({
+    id: item.id,
+    ...item.data(),
+  }));
+}
+
+export async function addGalleryItem(
+  title: string,
+  image: string,
+  published: boolean
+) {
+  await addDoc(galleryCollection, {
+    title,
+    image,
+    published,
+    createdAt: serverTimestamp(),
+  });
+}
+
+export async function updateGalleryItem(
+  id: string,
+  title: string,
+  image: string,
+  published: boolean
+) {
+  await updateDoc(doc(db, "gallery", id), {
+    title,
+    image,
+    published,
+    updatedAt: serverTimestamp(),
+  });
+}
+
+export async function deleteGalleryItem(id: string) {
+  await deleteDoc(doc(db, "gallery", id));
+}
+
+export async function getPublishedGallery() {
+  const q = query(
+    galleryCollection,
+    orderBy("createdAt", "desc")
+  );
+
+  const snapshot = await getDocs(q);
+
+  return snapshot.docs
+    .map((item) => ({
+      id: item.id,
+      ...item.data(),
+    }))
+    .filter((item) => item.published === true);
+}
