@@ -1,8 +1,11 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
+import { usePathname, useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import { signOut } from "firebase/auth";
+
+import { auth } from "@/lib/firebase";
 
 const menuItems = [
   {
@@ -38,13 +41,65 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  const router = useRouter();
 
+  const [user, setUser] = useState(auth.currentUser);
+  const [checkingAuth, setCheckingAuth] = useState(true);
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  // Check Firebase login status
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
+      setUser(currentUser);
+      setCheckingAuth(false);
+
+      if (!currentUser) {
+        router.replace("/admin/login");
+      }
+    });
+
+    return () => unsubscribe();
+  }, [router]);
+
+  // Loading screen while checking authentication
+  if (checkingAuth) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gray-100">
+        <div className="text-center">
+
+          <div className="w-12 h-12 border-4 border-blue-700 border-t-transparent rounded-full animate-spin mx-auto" />
+
+          <p className="mt-4 text-gray-600">
+            Checking authentication...
+          </p>
+
+        </div>
+      </div>
+    );
+  }
+
+  // Do not show admin content if user is not logged in
+  if (!user) {
+    return null;
+  }
+
+  // Logout function
+  async function handleLogout() {
+    try {
+      await signOut(auth);
+      router.replace("/admin/login");
+    } catch (error) {
+      console.error("Logout error:", error);
+      alert("Logout गर्न समस्या भयो।");
+    }
+  }
 
   return (
     <div className="min-h-screen bg-gray-100">
 
-      {/* MOBILE HEADER */}
+      {/* =========================
+          MOBILE HEADER
+      ========================== */}
 
       <header className="lg:hidden bg-white shadow-sm h-16 flex items-center justify-between px-4 sticky top-0 z-40">
 
@@ -70,13 +125,16 @@ export default function AdminLayout({
           type="button"
           onClick={() => setSidebarOpen(!sidebarOpen)}
           className="text-2xl text-gray-700"
+          aria-label="Toggle menu"
         >
           {sidebarOpen ? "×" : "☰"}
         </button>
 
       </header>
 
-      {/* MOBILE OVERLAY */}
+      {/* =========================
+          MOBILE OVERLAY
+      ========================== */}
 
       {sidebarOpen && (
         <div
@@ -85,7 +143,9 @@ export default function AdminLayout({
         />
       )}
 
-      {/* SIDEBAR */}
+      {/* =========================
+          SIDEBAR
+      ========================== */}
 
       <aside
         className={`
@@ -151,9 +211,7 @@ export default function AdminLayout({
                 <Link
                   key={item.href}
                   href={item.href}
-                  onClick={() =>
-                    setSidebarOpen(false)
-                  }
+                  onClick={() => setSidebarOpen(false)}
                   className={`
                     flex
                     items-center
@@ -181,15 +239,18 @@ export default function AdminLayout({
 
                 </Link>
               );
+
             })}
 
           </div>
 
         </nav>
 
-        {/* BOTTOM */}
+        {/* BOTTOM MENU */}
 
         <div className="absolute bottom-0 left-0 right-0 p-4 border-t">
+
+          {/* VIEW WEBSITE */}
 
           <Link
             href="/"
@@ -206,11 +267,31 @@ export default function AdminLayout({
 
           </Link>
 
+          {/* LOGOUT */}
+
+          <button
+            type="button"
+            onClick={handleLogout}
+            className="w-full flex items-center gap-3 px-4 py-3 mt-2 rounded-lg text-red-600 hover:bg-red-50"
+          >
+
+            <span className="text-xl">
+              🚪
+            </span>
+
+            <span className="font-medium">
+              Logout
+            </span>
+
+          </button>
+
         </div>
 
       </aside>
 
-      {/* MAIN AREA */}
+      {/* =========================
+          MAIN CONTENT
+      ========================== */}
 
       <div className="lg:ml-64 min-h-screen">
 
