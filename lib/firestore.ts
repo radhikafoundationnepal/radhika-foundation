@@ -177,3 +177,44 @@ export async function getPublishedGallery() {
     }))
     .filter((item) => item.published === true);
 }
+const contactsCollection = collection(db, "contacts");
+
+export async function addContactMessage(
+  name: string,
+  email: string,
+  phone: string,
+  message: string
+) {
+  await addDoc(contactsCollection, {
+    name,
+    email,
+    phone,
+    message,
+    read: false,
+    createdAt: serverTimestamp(),
+  });
+}
+
+export async function getContactMessages() {
+  const q = query(
+    contactsCollection,
+    orderBy("createdAt", "desc")
+  );
+
+  const snapshot = await getDocs(q);
+
+  return snapshot.docs.map((item) => ({
+    id: item.id,
+    ...item.data(),
+  }));
+}
+
+export async function markContactAsRead(id: string) {
+  await updateDoc(doc(db, "contacts", id), {
+    read: true,
+  });
+}
+
+export async function deleteContactMessage(id: string) {
+  await deleteDoc(doc(db, "contacts", id));
+}
