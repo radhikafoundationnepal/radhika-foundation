@@ -1,53 +1,120 @@
+"use client";
+
+import Link from "next/link";
+import { useState } from "react";
+
 export default function Navbar() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const menuItems = [
+    { name: "Home", href: "/" },
+    { name: "About", href: "/about" },
+    { name: "News", href: "/news" },
+    { name: "Notice", href: "/notice" },
+    { name: "Gallery", href: "/gallery" },
+    { name: "Contact", href: "/contact" },
+  ];
+
   return (
-    <header className="sticky top-0 z-50 bg-blue-700 shadow-lg">
-      <div className="max-w-7xl mx-auto h-20 px-6 flex items-center justify-between">
+    <header className="sticky top-0 z-50 bg-white shadow-md">
 
-        <div className="flex items-center gap-3">
+      <div className="max-w-7xl mx-auto px-4">
 
-          <div className="w-12 h-12 rounded-full bg-white flex items-center justify-center text-blue-700 text-xl font-bold">
-            R
-          </div>
+        <div className="flex items-center justify-between h-20">
 
-          <div>
-            <h1 className="text-white text-2xl font-bold">
-              Radhika Foundation
-            </h1>
+          {/* LOGO */}
 
-            <p className="text-blue-100 text-sm">
-              Nepal
-            </p>
-          </div>
+          <Link
+            href="/"
+            className="flex items-center gap-3"
+            onClick={() => setMenuOpen(false)}
+          >
+
+            <div className="w-12 h-12 rounded-full bg-blue-700 text-white flex items-center justify-center text-xl font-bold">
+              R
+            </div>
+
+            <div>
+              <h1 className="font-bold text-lg text-blue-700">
+                Radhika Foundation
+              </h1>
+
+              <p className="text-xs text-gray-500">
+                Nepal
+              </p>
+            </div>
+
+          </Link>
+
+          {/* DESKTOP MENU */}
+
+          <nav className="hidden md:flex items-center gap-6">
+
+            {menuItems.map((item) => (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="text-gray-700 font-medium hover:text-blue-700 transition"
+              >
+                {item.name}
+              </Link>
+            ))}
+
+            <Link
+              href="/donate"
+              className="bg-blue-700 hover:bg-blue-800 text-white px-5 py-3 rounded-lg font-bold transition"
+            >
+              Donate
+            </Link>
+
+          </nav>
+
+          {/* MOBILE BUTTON */}
+
+          <button
+            type="button"
+            onClick={() => setMenuOpen(!menuOpen)}
+            className="md:hidden text-gray-700 text-3xl"
+            aria-label="Toggle menu"
+          >
+            {menuOpen ? "×" : "☰"}
+          </button>
 
         </div>
 
-        <nav>
+        {/* MOBILE MENU */}
 
-          <ul className="flex items-center gap-8 text-white font-medium">
+        {menuOpen && (
+          <nav className="md:hidden border-t py-4">
 
-            <li><a href="#">Home</a></li>
+            <div className="flex flex-col">
 
-            <li><a href="#about">About</a></li>
+              {menuItems.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setMenuOpen(false)}
+                  className="py-3 px-2 text-gray-700 font-medium hover:bg-gray-50 hover:text-blue-700 rounded"
+                >
+                  {item.name}
+                </Link>
+              ))}
 
-            <li><a href="#programs">Programs</a></li>
-
-            <li><a href="#news">News</a></li>
-
-            <li><a href="#gallery">Gallery</a></li>
-
-            <li><a href="#contact">Contact</a></li>
-
-            <li>
-              <button className="bg-white text-blue-700 px-5 py-2 rounded-full font-bold hover:bg-yellow-300">
+              <Link
+                href="/donate"
+                onClick={() => setMenuOpen(false)}
+                className="mt-3 bg-blue-700 hover:bg-blue-800 text-white text-center px-5 py-3 rounded-lg font-bold"
+              >
                 Donate
-              </button>
-            </li>
+              </Link>
 
-          </ul>
+            </div>
 
-        </nav>
+          </nav>
+        )}
 
       </div>
+
     </header>
   );
 }
