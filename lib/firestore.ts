@@ -218,3 +218,24 @@ export async function markContactAsRead(id: string) {
 export async function deleteContactMessage(id: string) {
   await deleteDoc(doc(db, "contacts", id));
 }
+export async function getDashboardStats() {
+  const [newsSnapshot, noticeSnapshot, gallerySnapshot, contactSnapshot] =
+    await Promise.all([
+      getDocs(collection(db, "news")),
+      getDocs(collection(db, "notices")),
+      getDocs(collection(db, "gallery")),
+      getDocs(collection(db, "contacts")),
+    ]);
+
+  const unreadContacts = contactSnapshot.docs.filter(
+    (item) => item.data().read === false
+  ).length;
+
+  return {
+    news: newsSnapshot.size,
+    notices: noticeSnapshot.size,
+    gallery: gallerySnapshot.size,
+    contacts: contactSnapshot.size,
+    unreadContacts,
+  };
+}
