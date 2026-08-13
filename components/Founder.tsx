@@ -32,7 +32,7 @@ const teamMembers: TeamMember[] = [
     name: "कल्पना भट्टराई",
     post: "सचिव",
     image:
-      "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEia_tnDJRLZcAA6GIL-zZrjELbyXZB6hPzJbrgrTFu8W_gjYJ6d5SoK5YIe7vY7iAdTPpUVL9xq05C0vetdwm7QmD3DKTWbKOKeWTHaiOjMQAK8tCqHMb30ZQRr2xlP7fbIaZ4ONHYupUP2PMxLupcaCo0-nQlMuPHFHBeA_t-Vdj5azvK9iwJvoF6cVZY/s403/kalpana%20bhattarai.jpg",
+      "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEia_tnDJRLZcAA6GIL-zZrjELbyXZB6hPzJbrgrTFu8W_gYjY6d5SoK5YIe7vY7iAdTPpUVL9xq05C0vetdwm7QmD3DKTWbKOKeWTHaiOjMQAK8tCqHMb30ZQRr2xlP7fbIaZ4ONHYupUP2PMxLupcaCo0-nQlMuPHFHBeA_t-Vdj5azvK9iwJvoF6cVZY/s403/kalpana%20bhattarai.jpg",
   },
   {
     name: "रमा नेपाल",
