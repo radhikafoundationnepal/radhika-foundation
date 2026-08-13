@@ -1,39 +1,43 @@
 "use client";
 
 import { useEffect, useState } from "react";
+
 import {
   addNews,
-  deleteNews,
   getNews,
   updateNews,
+  deleteNews,
 } from "@/lib/firestore";
 
 type NewsItem = {
   id: string;
   title: string;
-  description: string;
-  image?: string;
+  excerpt: string;
+  content: string;
+  imageUrl: string;
 };
 
-export default function NewsPage() {
+export default function NewsAdminPage() {
   const [news, setNews] = useState<NewsItem[]>([]);
-
-  const [title, setTitle] = useState("");
-  const [description, setDescription] = useState("");
-  const [image, setImage] = useState("");
-
-  const [editingId, setEditingId] = useState<string | null>(null);
 
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
 
+  const [editingId, setEditingId] = useState<string | null>(null);
+
+  const [title, setTitle] = useState("");
+  const [excerpt, setExcerpt] = useState("");
+  const [content, setContent] = useState("");
+  const [imageUrl, setImageUrl] = useState("");
+
   async function loadNews() {
     try {
       const data = await getNews();
+
       setNews(data as NewsItem[]);
     } catch (error) {
       console.error(error);
-      alert("News load हुन सकेन।");
+      alert("News load गर्न समस्या भयो।");
     } finally {
       setLoading(false);
     }
@@ -43,10 +47,11 @@ export default function NewsPage() {
     loadNews();
   }, []);
 
-  function clearForm() {
+  function resetForm() {
     setTitle("");
-    setDescription("");
-    setImage("");
+    setExcerpt("");
+    setContent("");
+    setImageUrl("");
     setEditingId(null);
   }
 
@@ -55,8 +60,8 @@ export default function NewsPage() {
   ) {
     e.preventDefault();
 
-    if (!title.trim() || !description.trim()) {
-      alert("Title र Description आवश्यक छ।");
+    if (!title.trim() || !content.trim()) {
+      alert("Title र Content आवश्यक छ।");
       return;
     }
 
@@ -67,24 +72,26 @@ export default function NewsPage() {
         await updateNews(
           editingId,
           title,
-          description,
-          image
+          excerpt,
+          content,
+          imageUrl
         );
 
-        alert("News updated successfully!");
+        alert("News successfully updated!");
       } else {
         await addNews(
           title,
-          description,
-          image
+          excerpt,
+          content,
+          imageUrl
         );
 
-        alert("News added successfully!");
+        alert("News successfully added!");
       }
 
-      clearForm();
-      await loadNews();
+      resetForm();
 
+      await loadNews();
     } catch (error) {
       console.error(error);
       alert("News save गर्न समस्या भयो।");
@@ -93,11 +100,13 @@ export default function NewsPage() {
     }
   }
 
-  function editNews(item: NewsItem) {
+  function handleEdit(item: NewsItem) {
     setEditingId(item.id);
-    setTitle(item.title);
-    setDescription(item.description);
-    setImage(item.image || "");
+
+    setTitle(item.title || "");
+    setExcerpt(item.excerpt || "");
+    setContent(item.content || "");
+    setImageUrl(item.imageUrl || "");
 
     window.scrollTo({
       top: 0,
@@ -107,10 +116,12 @@ export default function NewsPage() {
 
   async function handleDelete(id: string) {
     const confirmDelete = window.confirm(
-      "यो News delete गर्ने हो?"
+      "यो news delete गर्ने हो?"
     );
 
-    if (!confirmDelete) return;
+    if (!confirmDelete) {
+      return;
+    }
 
     try {
       await deleteNews(id);
@@ -127,25 +138,47 @@ export default function NewsPage() {
   return (
     <div>
 
+      {/* PAGE HEADER */}
+
       <div className="mb-8">
+
         <h1 className="text-4xl font-bold text-blue-700">
           News Management
         </h1>
 
         <p className="text-gray-600 mt-2">
-          Add, edit and manage foundation news.
+          Website का news यहाँबाट manage गर्नुहोस्।
         </p>
+
       </div>
 
-      {/* FORM */}
+      {/* ADD / EDIT FORM */}
 
-      <div className="bg-white rounded-xl shadow p-6 mb-8">
+      <div className="bg-white rounded-2xl shadow p-6 mb-8">
 
-        <h2 className="text-2xl font-bold mb-6">
-          {editingId ? "Edit News" : "Add New News"}
-        </h2>
+        <div className="flex items-center justify-between mb-6">
+
+          <h2 className="text-2xl font-bold text-gray-800">
+            {editingId
+              ? "Edit News"
+              : "Add New News"}
+          </h2>
+
+          {editingId && (
+            <button
+              type="button"
+              onClick={resetForm}
+              className="text-gray-600 hover:text-gray-900 font-semibold"
+            >
+              Cancel Edit
+            </button>
+          )}
+
+        </div>
 
         <form onSubmit={handleSubmit}>
+
+          {/* TITLE */}
 
           <label className="block font-semibold mb-2">
             News Title
@@ -154,24 +187,48 @@ export default function NewsPage() {
           <input
             type="text"
             value={title}
-            onChange={(e) => setTitle(e.target.value)}
+            onChange={(e) =>
+              setTitle(e.target.value)
+            }
             placeholder="Enter news title"
             className="w-full border rounded-lg p-3 mb-5"
+            required
           />
 
+          {/* EXCERPT */}
+
           <label className="block font-semibold mb-2">
-            Description
+            Short Description
           </label>
 
           <textarea
-            value={description}
+            value={excerpt}
             onChange={(e) =>
-              setDescription(e.target.value)
+              setExcerpt(e.target.value)
             }
-            placeholder="Enter news description"
-            rows={6}
+            placeholder="Short description of the news"
+            rows={3}
             className="w-full border rounded-lg p-3 mb-5"
           />
+
+          {/* CONTENT */}
+
+          <label className="block font-semibold mb-2">
+            News Content
+          </label>
+
+          <textarea
+            value={content}
+            onChange={(e) =>
+              setContent(e.target.value)
+            }
+            placeholder="Write full news content..."
+            rows={8}
+            className="w-full border rounded-lg p-3 mb-5"
+            required
+          />
+
+          {/* IMAGE URL */}
 
           <label className="block font-semibold mb-2">
             Image URL
@@ -179,122 +236,128 @@ export default function NewsPage() {
 
           <input
             type="url"
-            value={image}
-            onChange={(e) => setImage(e.target.value)}
+            value={imageUrl}
+            onChange={(e) =>
+              setImageUrl(e.target.value)
+            }
             placeholder="https://example.com/image.jpg"
-            className="w-full border rounded-lg p-3"
+            className="w-full border rounded-lg p-3 mb-6"
           />
 
-          {/* IMAGE PREVIEW */}
+          {/* BUTTON */}
 
-          {image && (
-            <div className="mt-4 mb-6">
-
-              <p className="font-semibold mb-2">
-                Image Preview
-              </p>
-
-              <img
-                src={image}
-                alt="News preview"
-                className="w-full max-w-md h-52 object-cover rounded-lg border"
-                onError={(e) => {
-                  e.currentTarget.style.display = "none";
-                }}
-              />
-
-            </div>
-          )}
-
-          <div className="flex gap-3 mt-6">
-
-            <button
-              type="submit"
-              disabled={saving}
-              className="bg-blue-700 hover:bg-blue-800 disabled:bg-gray-400 text-white px-6 py-3 rounded-lg font-bold"
-            >
-              {saving
-                ? "Saving..."
-                : editingId
-                ? "Update News"
-                : "Add News"}
-            </button>
-
-            {editingId && (
-              <button
-                type="button"
-                onClick={clearForm}
-                className="bg-gray-500 hover:bg-gray-600 text-white px-6 py-3 rounded-lg"
-              >
-                Cancel
-              </button>
-            )}
-
-          </div>
+          <button
+            type="submit"
+            disabled={saving}
+            className="bg-blue-700 hover:bg-blue-800 disabled:bg-gray-400 text-white font-bold px-6 py-3 rounded-lg"
+          >
+            {saving
+              ? "Saving..."
+              : editingId
+              ? "Update News"
+              : "Add News"}
+          </button>
 
         </form>
+
       </div>
 
       {/* NEWS LIST */}
 
-      <div className="bg-white rounded-xl shadow p-6">
+      <div>
 
-        <h2 className="text-2xl font-bold mb-6">
+        <h2 className="text-2xl font-bold text-gray-800 mb-5">
           All News
         </h2>
 
         {loading ? (
-          <p>Loading news...</p>
-        ) : news.length === 0 ? (
           <p className="text-gray-500">
-            अहिले कुनै News छैन।
+            Loading news...
           </p>
+        ) : news.length === 0 ? (
+          <div className="bg-white rounded-xl shadow p-8 text-center">
+
+            <p className="text-gray-500">
+              अहिलेसम्म कुनै news छैन।
+            </p>
+
+          </div>
         ) : (
           <div className="space-y-5">
 
             {news.map((item) => (
+
               <div
                 key={item.id}
-                className="border rounded-xl p-5"
+                className="bg-white rounded-xl shadow p-6"
               >
 
-                {item.image && (
-                  <img
-                    src={item.image}
-                    alt={item.title}
-                    className="w-full max-w-md h-52 object-cover rounded-lg mb-4"
-                  />
-                )}
+                <div className="flex flex-col md:flex-row gap-6">
 
-                <h3 className="text-xl font-bold">
-                  {item.title}
-                </h3>
+                  {/* IMAGE */}
 
-                <p className="text-gray-600 mt-2 whitespace-pre-line">
-                  {item.description}
-                </p>
+                  {item.imageUrl && (
+                    <div className="w-full md:w-48 h-32 flex-shrink-0">
 
-                <div className="flex gap-2 mt-5">
+                      <img
+                        src={item.imageUrl}
+                        alt={item.title}
+                        className="w-full h-full object-cover rounded-lg"
+                      />
 
-                  <button
-                    onClick={() => editNews(item)}
-                    className="bg-yellow-500 hover:bg-yellow-600 text-white px-4 py-2 rounded-lg"
-                  >
-                    Edit
-                  </button>
+                    </div>
+                  )}
 
-                  <button
-                    onClick={() =>
-                      handleDelete(item.id)
-                    }
-                    className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg"
-                  >
-                    Delete
-                  </button>
+                  {/* CONTENT */}
+
+                  <div className="flex-1">
+
+                    <h3 className="text-xl font-bold text-gray-800">
+                      {item.title}
+                    </h3>
+
+                    {item.excerpt && (
+                      <p className="text-gray-600 mt-2">
+                        {item.excerpt}
+                      </p>
+                    )}
+
+                    <p className="text-gray-500 mt-3 line-clamp-3 whitespace-pre-line">
+                      {item.content}
+                    </p>
+
+                    {/* ACTIONS */}
+
+                    <div className="flex gap-3 mt-5">
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleEdit(item)
+                        }
+                        className="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg font-semibold"
+                      >
+                        Edit
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() =>
+                          handleDelete(item.id)
+                        }
+                        className="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg font-semibold"
+                      >
+                        Delete
+                      </button>
+
+                    </div>
+
+                  </div>
 
                 </div>
 
               </div>
+
             ))}
 
           </div>
