@@ -1,125 +1,254 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
+
+const heroImages = [
+  "/images/hero-bg.jpg",
+  "/images/hero-bg2.jpg",
+  "/images/hero-bg3.jpg",
+  "/images/hero-bg4.jpg",
+  "/images/hero-bg5.jpg",
+  "/images/hero-bg6.jpg",
+];
 
 export default function Hero() {
+  const [currentImage, setCurrentImage] = useState(0);
+
+  /* =========================
+      AUTOMATIC SLIDESHOW
+  ========================== */
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setCurrentImage((prev) => (prev + 1) % heroImages.length);
+    }, 5000);
+
+    return () => clearInterval(interval);
+  }, []);
+
   return (
-    <section className="relative min-h-[680px] md:min-h-[760px] overflow-hidden">
+    <section className="relative min-h-[650px] md:min-h-[720px] overflow-hidden">
 
-      {/* =========================================
-          BACKGROUND IMAGE
-      ========================================== */}
-      <div
-        className="absolute inset-0 bg-cover bg-center scale-105"
-        style={{
-          backgroundImage: "url('/images/hero-bg.jpg')",
-        }}
-      />
+      {/* =====================================================
+          BACKGROUND SLIDES
+      ====================================================== */}
 
-      {/* BLUR + DARK OVERLAY */}
-      <div className="absolute inset-0 bg-black/35 backdrop-blur-[1px]" />
+      {heroImages.map((image, index) => (
+        <div
+          key={image}
+          className={`
+            absolute
+            inset-0
+            bg-cover
+            bg-center
+            transition-all
+            duration-[1500ms]
+            ease-in-out
+            ${
+              currentImage === index
+                ? "opacity-100 scale-100"
+                : "opacity-0 scale-105"
+            }
+          `}
+          style={{
+            backgroundImage: `url("${image}")`,
+          }}
+        />
+      ))}
 
-      {/* BLUE GRADIENT */}
-      <div className="absolute inset-0 bg-gradient-to-r from-blue-950/95 via-blue-900/75 to-blue-900/20" />
 
-      {/* BOTTOM DARK GRADIENT */}
-      <div className="absolute inset-x-0 bottom-0 h-48 bg-gradient-to-t from-blue-950/70 to-transparent" />
+      {/* =====================================================
+          DARK OVERLAY
+      ====================================================== */}
+
+      <div className="absolute inset-0 bg-blue-950/60" />
+
+      {/* =====================================================
+          GRADIENT OVERLAY
+      ====================================================== */}
+
+      <div className="absolute inset-0 bg-gradient-to-b from-blue-950/30 via-blue-900/50 to-blue-950/85" />
 
 
-      {/* =========================================
+      {/* =====================================================
           CONTENT
-      ========================================== */}
-      <div className="relative z-10 max-w-7xl mx-auto px-6">
+      ====================================================== */}
 
-        <div className="min-h-[680px] md:min-h-[760px] flex items-center">
+      <div className="relative z-10 max-w-7xl mx-auto px-6 min-h-[650px] md:min-h-[720px] flex items-center justify-center">
 
-          <div className="max-w-3xl pt-16 md:pt-10">
+        <div className="text-center max-w-4xl">
 
-            {/* SMALL BADGE */}
-            <div className="inline-flex items-center gap-3 bg-white/15 backdrop-blur-md border border-white/25 text-white px-5 py-3 rounded-full shadow-xl">
+          {/* WELCOME BADGE */}
 
-              <span className="flex items-center justify-center w-8 h-8 rounded-full bg-red-500 text-white">
+          <div className="inline-flex items-center gap-2 bg-white/95 backdrop-blur-sm text-blue-700 px-6 py-3 rounded-full font-bold shadow-xl">
+
+            <span className="text-xl">
+              🙏
+            </span>
+
+            <span>
+              Welcome to Radhika Foundation Nepal
+            </span>
+
+          </div>
+
+
+          {/* TITLE */}
+
+          <h1 className="mt-8 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-tight drop-shadow-2xl">
+
+            Together We Build
+
+            <br />
+
+            <span className="text-yellow-300">
+              Better Communities
+            </span>
+
+          </h1>
+
+
+          {/* DESCRIPTION */}
+
+          <p className="mt-7 text-base sm:text-lg md:text-xl text-white/90 leading-relaxed max-w-3xl mx-auto drop-shadow-lg">
+
+            Radhika Foundation Nepal is dedicated to education,
+            health, women empowerment, environmental protection
+            and sustainable development.
+
+          </p>
+
+
+          {/* =================================================
+              BUTTONS
+          ================================================== */}
+
+          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-5">
+
+            {/* DONATE */}
+
+            <Link
+              href="/donate"
+              className="
+                group
+                bg-red-600
+                hover:bg-red-700
+                text-white
+                px-9
+                py-4
+                rounded-full
+                font-extrabold
+                text-lg
+                shadow-2xl
+                transition-all
+                duration-300
+                hover:scale-105
+                hover:-translate-y-1
+              "
+            >
+              ❤️ Donate Now
+            </Link>
+
+
+            {/* VOLUNTEER */}
+
+            <Link
+              href="#volunteer"
+              className="
+                bg-white/95
+                hover:bg-white
+                text-blue-700
+                px-9
+                py-4
+                rounded-full
+                font-bold
+                text-lg
+                shadow-2xl
+                transition-all
+                duration-300
+                hover:scale-105
+                hover:-translate-y-1
+              "
+            >
+              🙋 Become a Volunteer
+            </Link>
+
+
+            {/* LEARN MORE */}
+
+            <Link
+              href="/about"
+              className="
+                border-2
+                border-white
+                text-white
+                hover:bg-white
+                hover:text-blue-700
+                px-9
+                py-4
+                rounded-full
+                font-bold
+                text-lg
+                transition-all
+                duration-300
+                hover:scale-105
+                hover:-translate-y-1
+              "
+            >
+              Learn More →
+            </Link>
+
+          </div>
+
+
+          {/* =================================================
+              TRUST / WORK AREAS
+          ================================================== */}
+
+          <div className="mt-12 flex flex-wrap justify-center gap-5 md:gap-8 text-white/95 text-sm md:text-base">
+
+            <div className="flex items-center gap-2">
+              <span className="text-xl">
+                🎓
+              </span>
+
+              <span className="font-semibold">
+                Education
+              </span>
+            </div>
+
+
+            <div className="flex items-center gap-2">
+              <span className="text-xl">
                 ❤️
               </span>
 
-              <span className="font-semibold text-sm md:text-base">
-                Welcome to Radhika Foundation Nepal
+              <span className="font-semibold">
+                Health & Care
               </span>
-
             </div>
 
 
-            {/* MAIN TITLE */}
-            <h1 className="mt-7 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-white leading-[1.05] tracking-tight">
-
-              Together We Can
-
-              <span className="block text-yellow-300 mt-2">
-                Make a Difference
+            <div className="flex items-center gap-2">
+              <span className="text-xl">
+                🌱
               </span>
 
-            </h1>
-
-
-            {/* DESCRIPTION */}
-            <p className="mt-7 text-base sm:text-lg md:text-xl text-white/90 leading-8 max-w-2xl">
-
-              Radhika Foundation Nepal is dedicated to education,
-              health, women empowerment, environmental protection
-              and sustainable development.
-
-            </p>
-
-
-            {/* BUTTONS */}
-            <div className="mt-9 flex flex-col sm:flex-row gap-4">
-
-              {/* DONATE */}
-              <Link
-                href="/donate"
-                className="group inline-flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white px-8 py-4 rounded-lg font-extrabold text-lg shadow-2xl transition-all duration-300 hover:-translate-y-1"
-              >
-                <span>❤️</span>
-                Donate Now
-                <span className="group-hover:translate-x-1 transition">
-                  →
-                </span>
-              </Link>
-
-
-              {/* VOLUNTEER */}
-              <Link
-                href="/volunteer"
-                className="group inline-flex items-center justify-center gap-2 bg-yellow-400 hover:bg-yellow-300 text-gray-900 px-8 py-4 rounded-lg font-bold text-lg shadow-xl transition-all duration-300 hover:-translate-y-1"
-              >
-                <span>🤝</span>
-                Become a Volunteer
-                <span className="group-hover:translate-x-1 transition">
-                  →
-                </span>
-              </Link>
-
+              <span className="font-semibold">
+                Environment
+              </span>
             </div>
 
 
-            {/* TRUST POINTS */}
-            <div className="mt-10 flex flex-wrap gap-x-7 gap-y-4 text-white/90">
+            <div className="flex items-center gap-2">
+              <span className="text-xl">
+                🤝
+              </span>
 
-              <div className="flex items-center gap-2">
-                <span className="text-xl">✓</span>
-                <span>Education Support</span>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <span className="text-xl">✓</span>
-                <span>Health & Care</span>
-              </div>
-
-              <div className="flex items-center gap-2">
-                <span className="text-xl">✓</span>
-                <span>Community Service</span>
-              </div>
-
+              <span className="font-semibold">
+                Community
+              </span>
             </div>
 
           </div>
@@ -129,57 +258,49 @@ export default function Hero() {
       </div>
 
 
-      {/* =========================================
-          FLOATING IMPACT CARD
-      ========================================== */}
-      <div className="absolute z-20 bottom-16 right-6 md:right-12 lg:right-20 hidden md:block">
+      {/* =====================================================
+          SLIDE INDICATORS
+      ====================================================== */}
 
-        <div className="bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl p-5 w-64">
+      <div className="absolute bottom-24 md:bottom-28 left-0 right-0 z-20 flex justify-center gap-2">
 
-          <div className="flex items-center gap-4">
-
-            <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center text-3xl">
-              🤝
-            </div>
-
-            <div>
-              <p className="text-3xl font-extrabold text-blue-700">
-                6235+
-              </p>
-
-              <p className="text-sm text-gray-600 font-medium">
-                People Served
-              </p>
-            </div>
-
-          </div>
-
-          <div className="mt-4 h-1.5 bg-blue-100 rounded-full overflow-hidden">
-            <div className="h-full w-4/5 bg-blue-700 rounded-full" />
-          </div>
-
-          <p className="text-xs text-gray-500 mt-3">
-            Together, we can create meaningful change.
-          </p>
-
-        </div>
+        {heroImages.map((image, index) => (
+          <button
+            key={image}
+            type="button"
+            onClick={() => setCurrentImage(index)}
+            aria-label={`Go to slide ${index + 1}`}
+            className={`
+              h-2.5
+              rounded-full
+              transition-all
+              duration-500
+              ${
+                currentImage === index
+                  ? "w-8 bg-white"
+                  : "w-2.5 bg-white/50 hover:bg-white/80"
+              }
+            `}
+          />
+        ))}
 
       </div>
 
 
-      {/* =========================================
-          BOTTOM WAVE
-      ========================================== */}
-      <div className="absolute bottom-0 left-0 right-0">
+      {/* =====================================================
+          BOTTOM CURVE
+      ====================================================== */}
+
+      <div className="absolute bottom-0 left-0 right-0 z-20">
 
         <svg
           viewBox="0 0 1440 100"
-          className="w-full h-16 md:h-24"
+          className="w-full h-20 md:h-24"
           preserveAspectRatio="none"
         >
 
           <path
-            d="M0,65 C300,110 520,10 820,45 C1100,80 1260,15 1440,50 L1440,100 L0,100 Z"
+            d="M0,60 C360,120 1080,0 1440,60 L1440,100 L0,100 Z"
             fill="white"
           />
 
