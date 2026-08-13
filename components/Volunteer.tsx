@@ -21,10 +21,7 @@ export default function Volunteer() {
       try {
         const data = await getVolunteers();
 
-        const approved = (data as VolunteerItem[]).filter(
-          (item) =>
-            String(item.status || "").toLowerCase() === "approved"
-        );
+        const approved = data as VolunteerItem[];
 
         setVolunteers(approved);
       } catch (error) {
