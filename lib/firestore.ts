@@ -388,7 +388,10 @@ export async function deleteContactMessage(id: string) {
 const volunteersCollection = collection(db, "volunteers");
 
 
-// Add volunteer
+// =========================================================
+// ADD VOLUNTEER
+// =========================================================
+
 export async function addVolunteer(data: {
   name: string;
   phone: string;
@@ -396,6 +399,7 @@ export async function addVolunteer(data: {
   address: string;
   area: string;
   message: string;
+  photoUrl?: string;
 }) {
   await addDoc(volunteersCollection, {
     name: data.name,
@@ -404,13 +408,17 @@ export async function addVolunteer(data: {
     address: data.address,
     area: data.area,
     message: data.message,
+    photoUrl: data.photoUrl || "",
     status: "pending",
     createdAt: serverTimestamp(),
   });
 }
 
 
-// Get all volunteers
+// =========================================================
+// GET ALL VOLUNTEERS
+// =========================================================
+
 export async function getVolunteers(): Promise<Volunteer[]> {
   const q = query(
     volunteersCollection,
@@ -426,10 +434,37 @@ export async function getVolunteers(): Promise<Volunteer[]> {
 }
 
 
-// Update volunteer status
+// =========================================================
+// GET APPROVED VOLUNTEERS
+// =========================================================
+
+export async function getApprovedVolunteers(): Promise<Volunteer[]> {
+  const q = query(
+    volunteersCollection,
+    orderBy("createdAt", "desc")
+  );
+
+  const snapshot = await getDocs(q);
+
+  return snapshot.docs
+    .map((item) => ({
+      id: item.id,
+      ...item.data(),
+    }))
+    .filter(
+      (item) =>
+        (item as Volunteer).status === "approved"
+    ) as Volunteer[];
+}
+
+
+// =========================================================
+// UPDATE VOLUNTEER STATUS
+// =========================================================
+
 export async function updateVolunteerStatus(
   id: string,
-  status: string
+  status: "pending" | "approved" | "rejected"
 ) {
   await updateDoc(doc(db, "volunteers", id), {
     status,
@@ -438,11 +473,13 @@ export async function updateVolunteerStatus(
 }
 
 
-// Delete volunteer
+// =========================================================
+// DELETE VOLUNTEER
+// =========================================================
+
 export async function deleteVolunteer(id: string) {
   await deleteDoc(doc(db, "volunteers", id));
 }
-
 
 /* =========================================================
    DASHBOARD STATISTICS
