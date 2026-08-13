@@ -220,8 +220,8 @@ export default function Navbar() {
                 <Image
                   src="/images/logo.png"
                   alt="Radhika Foundation Nepal Logo"
-                  width={80}
-                  height={80}
+                  width={90}
+                  height={90}
                   priority
                   className={`object-contain transition-all duration-300 ${
                     scrolled
