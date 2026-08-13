@@ -15,7 +15,11 @@ type VolunteerItem = {
 export default function Volunteer() {
   const [volunteers, setVolunteers] = useState<VolunteerItem[]>([]);
   const [loading, setLoading] = useState(true);
+  const [current, setCurrent] = useState(0);
 
+  // ==========================================
+  // LOAD APPROVED VOLUNTEERS
+  // ==========================================
   useEffect(() => {
     async function loadVolunteers() {
       try {
@@ -25,7 +29,7 @@ export default function Volunteer() {
           (item) => item.status === "approved"
         );
 
-        setVolunteers(approved.slice(0, 6));
+        setVolunteers(approved);
       } catch (error) {
         console.error("Volunteer loading error:", error);
       } finally {
@@ -35,6 +39,43 @@ export default function Volunteer() {
 
     loadVolunteers();
   }, []);
+
+  // ==========================================
+  // AUTO SLIDER
+  // ==========================================
+  useEffect(() => {
+    if (volunteers.length <= 1) return;
+
+    const timer = setInterval(() => {
+      setCurrent((prev) => (prev + 1) % volunteers.length);
+    }, 3500);
+
+    return () => clearInterval(timer);
+  }, [volunteers.length]);
+
+  // ==========================================
+  // GET VISIBLE VOLUNTEERS
+  // ==========================================
+  function getVisibleVolunteers() {
+    if (volunteers.length === 0) {
+      return [];
+    }
+
+    // Desktop मा 3 वटा देखाउने
+    // Tablet मा 2 वटा
+    // Mobile मा CSS ले 1 वटा देखाउँछ
+    const result = [];
+
+    for (let i = 0; i < Math.min(3, volunteers.length); i++) {
+      result.push(
+        volunteers[(current + i) % volunteers.length]
+      );
+    }
+
+    return result;
+  }
+
+  const visibleVolunteers = getVisibleVolunteers();
 
   return (
     <section
@@ -49,6 +90,7 @@ export default function Volunteer() {
         <div className="text-center max-w-3xl mx-auto">
 
           <div className="flex items-center justify-center gap-3">
+
             <span className="w-10 h-1 bg-red-500 rounded-full" />
 
             <span className="uppercase tracking-widest text-sm font-bold text-blue-700">
@@ -56,6 +98,7 @@ export default function Volunteer() {
             </span>
 
             <span className="w-10 h-1 bg-red-500 rounded-full" />
+
           </div>
 
           <h2 className="mt-5 text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900">
@@ -71,190 +114,201 @@ export default function Volunteer() {
 
 
         {/* =====================================
-            TOP INFO
+            APPROVED VOLUNTEER SLIDER
         ====================================== */}
-        <div className="mt-10 flex justify-center">
+        <div className="mt-12">
 
-          <div className="inline-flex items-center gap-4 bg-white px-7 py-4 rounded-2xl shadow-md border">
+          {loading ? (
 
-            <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center text-2xl">
-              🤝
+            <div className="grid md:grid-cols-3 gap-6">
+
+              {[1, 2, 3].map((item) => (
+
+                <div
+                  key={item}
+                  className="bg-white rounded-2xl p-6 shadow animate-pulse"
+                >
+
+                  <div className="flex items-center gap-4">
+
+                    <div className="w-14 h-14 rounded-full bg-gray-200" />
+
+                    <div className="flex-1">
+
+                      <div className="h-5 bg-gray-200 rounded w-3/4" />
+
+                      <div className="h-4 bg-gray-200 rounded mt-3 w-1/2" />
+
+                    </div>
+
+                  </div>
+
+                  <div className="h-4 bg-gray-200 rounded mt-6" />
+
+                  <div className="h-4 bg-gray-200 rounded mt-3 w-4/5" />
+
+                </div>
+
+              ))}
+
             </div>
 
-            <div>
-              <p className="text-sm text-gray-500">
-                Approved Volunteers
+          ) : volunteers.length === 0 ? (
+
+            /* ==================================
+               NO APPROVED VOLUNTEER
+            =================================== */
+            <div className="bg-white rounded-2xl shadow border border-gray-100 p-8 text-center">
+
+              <div className="text-5xl">
+                🤝
+              </div>
+
+              <h3 className="text-xl font-bold text-gray-800 mt-4">
+                Our Volunteer Family
+              </h3>
+
+              <p className="text-gray-500 mt-2">
+                स्वयंसेवक बन्न चाहनुहुन्छ?
+                तपाईं पनि हाम्रो अभियानमा जोडिनुहोस्।
               </p>
 
-              <p className="text-2xl font-extrabold text-blue-700">
-                {loading ? "..." : volunteers.length}
-                {volunteers.length >= 6 && "+"}
-              </p>
             </div>
 
-          </div>
+          ) : (
+
+            <>
+              {/* ==================================
+                  SLIDER CARDS
+              =================================== */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+
+                {visibleVolunteers.map((volunteer) => (
+
+                  <div
+                    key={volunteer.id}
+                    className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-2xl transition-all duration-500"
+                  >
+
+                    {/* NAME */}
+                    <div className="flex items-center gap-4">
+
+                      <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center text-2xl shrink-0">
+                        👤
+                      </div>
+
+                      <div className="min-w-0">
+
+                        <h3 className="text-xl font-extrabold text-gray-900 truncate">
+                          {volunteer.name || "Volunteer"}
+                        </h3>
+
+                        <span className="inline-flex items-center gap-1 mt-1 text-xs font-bold text-green-600">
+
+                          <span className="w-2 h-2 bg-green-500 rounded-full" />
+
+                          Approved Volunteer
+
+                        </span>
+
+                      </div>
+
+                    </div>
+
+
+                    {/* DETAILS */}
+                    <div className="mt-6 space-y-4">
+
+                      {/* ADDRESS */}
+                      <div className="flex items-start gap-3">
+
+                        <div className="w-10 h-10 rounded-lg bg-red-50 flex items-center justify-center shrink-0">
+                          📍
+                        </div>
+
+                        <div className="min-w-0">
+
+                          <p className="text-xs text-gray-400 uppercase font-bold">
+                            Address
+                          </p>
+
+                          <p className="text-gray-700 font-medium mt-1 break-words">
+                            {volunteer.address || "Not provided"}
+                          </p>
+
+                        </div>
+
+                      </div>
+
+
+                      {/* SECTOR */}
+                      <div className="flex items-start gap-3">
+
+                        <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
+                          🏷️
+                        </div>
+
+                        <div className="min-w-0">
+
+                          <p className="text-xs text-gray-400 uppercase font-bold">
+                            Sector / Area
+                          </p>
+
+                          <p className="text-blue-700 font-bold mt-1">
+                            {volunteer.area || "General"}
+                          </p>
+
+                        </div>
+
+                      </div>
+
+                    </div>
+
+                  </div>
+
+                ))}
+
+              </div>
+
+
+              {/* ==================================
+                  SLIDER DOTS
+              =================================== */}
+              {volunteers.length > 1 && (
+
+                <div className="flex justify-center items-center gap-2 mt-7">
+
+                  {volunteers.map((_, index) => (
+
+                    <button
+                      key={index}
+                      type="button"
+                      onClick={() => setCurrent(index)}
+                      aria-label={`Go to volunteer ${index + 1}`}
+                      className={`h-2.5 rounded-full transition-all duration-300 ${
+                        index === current
+                          ? "w-8 bg-blue-700"
+                          : "w-2.5 bg-gray-300 hover:bg-blue-400"
+                      }`}
+                    />
+
+                  ))}
+
+                </div>
+
+              )}
+
+            </>
+          )}
 
         </div>
 
 
         {/* =====================================
-            LOADING
+            BECOME A VOLUNTEER
+            APPROVED SLIDER को ठीक तल
         ====================================== */}
-        {loading && (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
-
-            {[1, 2, 3].map((item) => (
-              <div
-                key={item}
-                className="bg-white rounded-2xl p-6 shadow animate-pulse"
-              >
-
-                <div className="flex gap-4">
-
-                  <div className="w-14 h-14 rounded-full bg-gray-200" />
-
-                  <div className="flex-1">
-
-                    <div className="h-5 bg-gray-200 rounded w-3/4" />
-
-                    <div className="h-4 bg-gray-200 rounded mt-3 w-1/2" />
-
-                    <div className="h-4 bg-gray-200 rounded mt-2 w-2/3" />
-
-                  </div>
-
-                </div>
-
-              </div>
-            ))}
-
-          </div>
-        )}
-
-
-        {/* =====================================
-            NO APPROVED VOLUNTEERS
-        ====================================== */}
-        {!loading && volunteers.length === 0 && (
-          <div className="mt-12 bg-white rounded-2xl shadow border border-gray-100 p-10 text-center">
-
-            <div className="text-6xl">
-              🤝
-            </div>
-
-            <h3 className="text-xl font-bold text-gray-800 mt-4">
-              Become Our Volunteer
-            </h3>
-
-            <p className="text-gray-500 mt-2 max-w-xl mx-auto">
-              हाम्रो समाजसेवा अभियानमा तपाईं पनि जोडिनुहोस्।
-              तपाईंको समय, सीप र सहयोगले ठूलो परिवर्तन ल्याउन सक्छ।
-            </p>
-
-            <Link
-              href="/volunteer"
-              className="inline-flex items-center gap-2 mt-6 bg-blue-700 hover:bg-blue-800 text-white px-7 py-3 rounded-lg font-bold shadow-lg transition"
-            >
-              Become a Volunteer
-              <span>→</span>
-            </Link>
-
-          </div>
-        )}
-
-
-        {/* =====================================
-            VOLUNTEER CARDS
-        ====================================== */}
-        {!loading && volunteers.length > 0 && (
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 mt-12">
-
-            {volunteers.map((volunteer) => (
-
-              <div
-                key={volunteer.id}
-                className="group bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-2xl hover:-translate-y-1 transition-all duration-300"
-              >
-
-                {/* NAME */}
-                <div className="flex items-center gap-4">
-
-                  <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center text-2xl shrink-0">
-                    👤
-                  </div>
-
-                  <div className="min-w-0">
-
-                    <h3 className="text-xl font-extrabold text-gray-900 truncate">
-                      {volunteer.name || "Volunteer"}
-                    </h3>
-
-                    <span className="inline-flex items-center gap-1 mt-1 text-xs font-bold text-green-600">
-                      <span className="w-2 h-2 bg-green-500 rounded-full" />
-                      Approved Volunteer
-                    </span>
-
-                  </div>
-
-                </div>
-
-
-                {/* DETAILS */}
-                <div className="mt-6 space-y-3">
-
-                  {/* ADDRESS */}
-                  <div className="flex items-start gap-3">
-
-                    <div className="w-9 h-9 rounded-lg bg-red-50 flex items-center justify-center shrink-0">
-                      📍
-                    </div>
-
-                    <div>
-                      <p className="text-xs text-gray-400 uppercase font-semibold">
-                        Address
-                      </p>
-
-                      <p className="text-gray-700 font-medium">
-                        {volunteer.address || "Not provided"}
-                      </p>
-                    </div>
-
-                  </div>
-
-
-                  {/* SECTOR / AREA */}
-                  <div className="flex items-start gap-3">
-
-                    <div className="w-9 h-9 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
-                      🏷️
-                    </div>
-
-                    <div>
-                      <p className="text-xs text-gray-400 uppercase font-semibold">
-                        Sector / Area
-                      </p>
-
-                      <p className="text-blue-700 font-bold">
-                        {volunteer.area || "General"}
-                      </p>
-                    </div>
-
-                  </div>
-
-                </div>
-
-              </div>
-
-            ))}
-
-          </div>
-        )}
-
-
-        {/* =====================================
-            BOTTOM CTA
-        ====================================== */}
-        <div className="mt-14 bg-blue-700 rounded-3xl p-8 md:p-10 shadow-2xl">
+        <div className="mt-10 bg-blue-700 rounded-3xl p-8 md:p-10 shadow-2xl">
 
           <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
 
@@ -265,11 +319,12 @@ export default function Volunteer() {
               </p>
 
               <h3 className="text-2xl md:text-3xl font-extrabold text-white mt-2">
-                तपाईं पनि स्वयंसेवक बन्नुहोस्।
+                Become a Volunteer
               </h3>
 
-              <p className="text-white/75 mt-2">
-                समाजका लागि आफ्नो समय, सीप र सहयोग प्रदान गर्नुहोस्।
+              <p className="text-white/75 mt-2 leading-7">
+                तपाईंको समय, सीप र सहयोगले समाजमा सकारात्मक
+                परिवर्तन ल्याउन सक्छ।
               </p>
 
             </div>
@@ -279,7 +334,7 @@ export default function Volunteer() {
               href="/volunteer"
               className="inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-100 text-blue-700 px-7 py-4 rounded-xl font-extrabold shadow-lg transition shrink-0"
             >
-              🤝 Become a Volunteer
+              🤝 Join Us
               <span>→</span>
             </Link>
 
