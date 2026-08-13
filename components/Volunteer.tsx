@@ -14,329 +14,214 @@ type VolunteerItem = {
 
 export default function Volunteer() {
   const [volunteers, setVolunteers] = useState<VolunteerItem[]>([]);
-  const [loading, setLoading] = useState(true);
   const [current, setCurrent] = useState(0);
 
-  // ==========================================
-  // LOAD APPROVED VOLUNTEERS
-  // ==========================================
   useEffect(() => {
     async function loadVolunteers() {
       try {
         const data = await getVolunteers();
 
         const approved = (data as VolunteerItem[]).filter(
-          (item) => item.status === "approved"
+          (item) =>
+            String(item.status || "").toLowerCase() === "approved"
         );
 
         setVolunteers(approved);
       } catch (error) {
-        console.error("Volunteer loading error:", error);
-      } finally {
-        setLoading(false);
+        console.error("Volunteer error:", error);
       }
     }
 
     loadVolunteers();
   }, []);
 
-  // ==========================================
-  // AUTO SLIDER
-  // ==========================================
+  // Automatic slider
   useEffect(() => {
     if (volunteers.length <= 1) return;
 
     const timer = setInterval(() => {
       setCurrent((prev) => (prev + 1) % volunteers.length);
-    }, 3500);
+    }, 3000);
 
     return () => clearInterval(timer);
   }, [volunteers.length]);
 
-  // ==========================================
-  // GET VISIBLE VOLUNTEERS
-  // ==========================================
-  function getVisibleVolunteers() {
-    if (volunteers.length === 0) {
-      return [];
-    }
+  function getVolunteer(index: number) {
+    if (volunteers.length === 0) return null;
 
-    // Desktop मा 3 वटा देखाउने
-    // Tablet मा 2 वटा
-    // Mobile मा CSS ले 1 वटा देखाउँछ
-    const result = [];
-
-    for (let i = 0; i < Math.min(3, volunteers.length); i++) {
-      result.push(
-        volunteers[(current + i) % volunteers.length]
-      );
-    }
-
-    return result;
+    return volunteers[index % volunteers.length];
   }
-
-  const visibleVolunteers = getVisibleVolunteers();
 
   return (
     <section
       id="volunteer"
-      className="py-20 md:py-28 bg-gray-50"
+      className="py-20 md:py-28 bg-blue-700"
     >
       <div className="max-w-7xl mx-auto px-6">
 
-        {/* =====================================
-            HEADER
-        ====================================== */}
-        <div className="text-center max-w-3xl mx-auto">
+        {/* ======================================
+            APPROVED VOLUNTEERS
+            BECOME A VOLUNTEER भन्दा ठीक माथि
+        ======================================= */}
 
-          <div className="flex items-center justify-center gap-3">
+        {volunteers.length > 0 && (
+          <div className="mb-10">
 
-            <span className="w-10 h-1 bg-red-500 rounded-full" />
+            <div className="text-center mb-7">
 
-            <span className="uppercase tracking-widest text-sm font-bold text-blue-700">
-              Our Volunteers
-            </span>
+              <span className="text-yellow-300 font-bold uppercase tracking-widest text-sm">
+                Our Volunteers
+              </span>
 
-            <span className="w-10 h-1 bg-red-500 rounded-full" />
+              <h2 className="text-2xl md:text-3xl font-extrabold text-white mt-2">
+                Meet Our Approved Volunteers
+              </h2>
 
-          </div>
-
-          <h2 className="mt-5 text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900">
-            Together We Serve
-          </h2>
-
-          <p className="mt-5 text-gray-600 text-lg leading-8">
-            समाज सेवाको अभियानमा Radhika Foundation Nepal सँग
-            जोडिनुभएका हाम्रा स्वयंसेवकहरू।
-          </p>
-
-        </div>
+            </div>
 
 
-        {/* =====================================
-            APPROVED VOLUNTEER SLIDER
-        ====================================== */}
-        <div className="mt-12">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
 
-          {loading ? (
+              {/* CARD 1 */}
+              {getVolunteer(current) && (
+                <VolunteerCard
+                  volunteer={getVolunteer(current)!}
+                />
+              )}
 
-            <div className="grid md:grid-cols-3 gap-6">
-
-              {[1, 2, 3].map((item) => (
-
-                <div
-                  key={item}
-                  className="bg-white rounded-2xl p-6 shadow animate-pulse"
-                >
-
-                  <div className="flex items-center gap-4">
-
-                    <div className="w-14 h-14 rounded-full bg-gray-200" />
-
-                    <div className="flex-1">
-
-                      <div className="h-5 bg-gray-200 rounded w-3/4" />
-
-                      <div className="h-4 bg-gray-200 rounded mt-3 w-1/2" />
-
-                    </div>
-
-                  </div>
-
-                  <div className="h-4 bg-gray-200 rounded mt-6" />
-
-                  <div className="h-4 bg-gray-200 rounded mt-3 w-4/5" />
-
+              {/* CARD 2 */}
+              {volunteers.length > 1 && (
+                <div className="hidden md:block">
+                  <VolunteerCard
+                    volunteer={getVolunteer(current + 1)!}
+                  />
                 </div>
+              )}
 
-              ))}
-
-            </div>
-
-          ) : volunteers.length === 0 ? (
-
-            /* ==================================
-               NO APPROVED VOLUNTEER
-            =================================== */
-            <div className="bg-white rounded-2xl shadow border border-gray-100 p-8 text-center">
-
-              <div className="text-5xl">
-                🤝
-              </div>
-
-              <h3 className="text-xl font-bold text-gray-800 mt-4">
-                Our Volunteer Family
-              </h3>
-
-              <p className="text-gray-500 mt-2">
-                स्वयंसेवक बन्न चाहनुहुन्छ?
-                तपाईं पनि हाम्रो अभियानमा जोडिनुहोस्।
-              </p>
+              {/* CARD 3 */}
+              {volunteers.length > 2 && (
+                <div className="hidden lg:block">
+                  <VolunteerCard
+                    volunteer={getVolunteer(current + 2)!}
+                  />
+                </div>
+              )}
 
             </div>
 
-          ) : (
 
-            <>
-              {/* ==================================
-                  SLIDER CARDS
-              =================================== */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {/* DOTS */}
+            {volunteers.length > 1 && (
+              <div className="flex justify-center gap-2 mt-6">
 
-                {visibleVolunteers.map((volunteer) => (
-
-                  <div
+                {volunteers.map((volunteer, index) => (
+                  <button
                     key={volunteer.id}
-                    className="bg-white rounded-2xl p-6 shadow-lg border border-gray-100 hover:shadow-2xl transition-all duration-500"
-                  >
-
-                    {/* NAME */}
-                    <div className="flex items-center gap-4">
-
-                      <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center text-2xl shrink-0">
-                        👤
-                      </div>
-
-                      <div className="min-w-0">
-
-                        <h3 className="text-xl font-extrabold text-gray-900 truncate">
-                          {volunteer.name || "Volunteer"}
-                        </h3>
-
-                        <span className="inline-flex items-center gap-1 mt-1 text-xs font-bold text-green-600">
-
-                          <span className="w-2 h-2 bg-green-500 rounded-full" />
-
-                          Approved Volunteer
-
-                        </span>
-
-                      </div>
-
-                    </div>
-
-
-                    {/* DETAILS */}
-                    <div className="mt-6 space-y-4">
-
-                      {/* ADDRESS */}
-                      <div className="flex items-start gap-3">
-
-                        <div className="w-10 h-10 rounded-lg bg-red-50 flex items-center justify-center shrink-0">
-                          📍
-                        </div>
-
-                        <div className="min-w-0">
-
-                          <p className="text-xs text-gray-400 uppercase font-bold">
-                            Address
-                          </p>
-
-                          <p className="text-gray-700 font-medium mt-1 break-words">
-                            {volunteer.address || "Not provided"}
-                          </p>
-
-                        </div>
-
-                      </div>
-
-
-                      {/* SECTOR */}
-                      <div className="flex items-start gap-3">
-
-                        <div className="w-10 h-10 rounded-lg bg-blue-50 flex items-center justify-center shrink-0">
-                          🏷️
-                        </div>
-
-                        <div className="min-w-0">
-
-                          <p className="text-xs text-gray-400 uppercase font-bold">
-                            Sector / Area
-                          </p>
-
-                          <p className="text-blue-700 font-bold mt-1">
-                            {volunteer.area || "General"}
-                          </p>
-
-                        </div>
-
-                      </div>
-
-                    </div>
-
-                  </div>
-
+                    onClick={() => setCurrent(index)}
+                    className={`h-2 rounded-full transition-all ${
+                      index === current
+                        ? "w-8 bg-yellow-300"
+                        : "w-2 bg-white/40"
+                    `}
+                    aria-label={`Volunteer ${index + 1}`}
+                  />
                 ))}
 
               </div>
+            )}
+
+          </div>
+        )}
 
 
-              {/* ==================================
-                  SLIDER DOTS
-              =================================== */}
-              {volunteers.length > 1 && (
-
-                <div className="flex justify-center items-center gap-2 mt-7">
-
-                  {volunteers.map((_, index) => (
-
-                    <button
-                      key={index}
-                      type="button"
-                      onClick={() => setCurrent(index)}
-                      aria-label={`Go to volunteer ${index + 1}`}
-                      className={`h-2.5 rounded-full transition-all duration-300 ${
-                        index === current
-                          ? "w-8 bg-blue-700"
-                          : "w-2.5 bg-gray-300 hover:bg-blue-400"
-                      }`}
-                    />
-
-                  ))}
-
-                </div>
-
-              )}
-
-            </>
-          )}
-
-        </div>
-
-
-        {/* =====================================
+        {/* ======================================
             BECOME A VOLUNTEER
-            APPROVED SLIDER को ठीक तल
-        ====================================== */}
-        <div className="mt-10 bg-blue-700 rounded-3xl p-8 md:p-10 shadow-2xl">
+        ======================================= */}
 
-          <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-6">
+        <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
 
-            <div>
+          <div className="grid md:grid-cols-2">
 
-              <p className="text-yellow-300 font-bold uppercase tracking-wider text-sm">
-                Join Our Mission
-              </p>
+            {/* LEFT */}
+            <div className="p-8 md:p-12">
 
-              <h3 className="text-2xl md:text-3xl font-extrabold text-white mt-2">
+              <span className="inline-block bg-blue-100 text-blue-700 px-4 py-2 rounded-full font-semibold text-sm">
+                🤝 Join Us
+              </span>
+
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-800 mt-5 leading-tight">
                 Become a Volunteer
-              </h3>
+              </h2>
 
-              <p className="text-white/75 mt-2 leading-7">
-                तपाईंको समय, सीप र सहयोगले समाजमा सकारात्मक
-                परिवर्तन ल्याउन सक्छ।
+              <p className="text-gray-600 text-lg mt-5 leading-8">
+                Radhika Foundation Nepal सँग जोडिएर समाजका लागि
+                सकारात्मक परिवर्तन ल्याउन तपाईं पनि स्वयंसेवक बन्नुहोस्।
               </p>
+
+              <p className="text-gray-600 mt-4 leading-7">
+                तपाईंको समय, सीप र सानो प्रयासले शिक्षा, स्वास्थ्य,
+                वातावरण तथा सामाजिक सेवाका क्षेत्रमा ठूलो योगदान
+                पुर्‍याउन सक्छ।
+              </p>
+
+              <Link
+                href="/volunteer"
+                className="inline-block mt-8 bg-blue-700 hover:bg-blue-800 text-white px-7 py-3 rounded-lg font-bold transition shadow-lg"
+              >
+                Become a Volunteer →
+              </Link>
 
             </div>
 
 
-            <Link
-              href="/volunteer"
-              className="inline-flex items-center justify-center gap-2 bg-white hover:bg-gray-100 text-blue-700 px-7 py-4 rounded-xl font-extrabold shadow-lg transition shrink-0"
-            >
-              🤝 Join Us
-              <span>→</span>
-            </Link>
+            {/* RIGHT */}
+            <div className="bg-blue-50 p-8 md:p-12 flex items-center">
+
+              <div className="grid grid-cols-2 gap-5 w-full">
+
+                <div className="bg-white rounded-2xl p-6 text-center shadow">
+                  <div className="text-4xl mb-3">🤝</div>
+                  <h3 className="font-bold text-gray-800">
+                    Serve
+                  </h3>
+                  <p className="text-sm text-gray-500 mt-2">
+                    समाज सेवामा योगदान
+                  </p>
+                </div>
+
+                <div className="bg-white rounded-2xl p-6 text-center shadow">
+                  <div className="text-4xl mb-3">❤️</div>
+                  <h3 className="font-bold text-gray-800">
+                    Care
+                  </h3>
+                  <p className="text-sm text-gray-500 mt-2">
+                    समुदायप्रति माया
+                  </p>
+                </div>
+
+                <div className="bg-white rounded-2xl p-6 text-center shadow">
+                  <div className="text-4xl mb-3">🌱</div>
+                  <h3 className="font-bold text-gray-800">
+                    Grow
+                  </h3>
+                  <p className="text-sm text-gray-500 mt-2">
+                    सकारात्मक विकास
+                  </p>
+                </div>
+
+                <div className="bg-white rounded-2xl p-6 text-center shadow">
+                  <div className="text-4xl mb-3">🌍</div>
+                  <h3 className="font-bold text-gray-800">
+                    Change
+                  </h3>
+                  <p className="text-sm text-gray-500 mt-2">
+                    राम्रो समाज निर्माण
+                  </p>
+                </div>
+
+              </div>
+
+            </div>
 
           </div>
 
@@ -344,5 +229,85 @@ export default function Volunteer() {
 
       </div>
     </section>
+  );
+}
+
+
+/* ==========================================
+   VOLUNTEER CARD
+========================================== */
+
+function VolunteerCard({
+  volunteer,
+}: {
+  volunteer: VolunteerItem;
+}) {
+  return (
+    <div className="bg-white rounded-2xl p-6 shadow-xl">
+
+      <div className="flex items-center gap-4">
+
+        <div className="w-14 h-14 rounded-full bg-blue-100 flex items-center justify-center text-2xl">
+          👤
+        </div>
+
+        <div className="min-w-0">
+
+          <h3 className="text-xl font-extrabold text-gray-900 truncate">
+            {volunteer.name || "Volunteer"}
+          </h3>
+
+          <span className="inline-flex items-center gap-1 text-xs font-bold text-green-600 mt-1">
+            <span className="w-2 h-2 bg-green-500 rounded-full" />
+            Approved Volunteer
+          </span>
+
+        </div>
+
+      </div>
+
+
+      <div className="mt-5 space-y-3">
+
+        <div className="flex gap-3">
+
+          <span className="text-lg">
+            📍
+          </span>
+
+          <div>
+            <p className="text-xs text-gray-400 font-bold uppercase">
+              Address
+            </p>
+
+            <p className="text-gray-700 font-medium">
+              {volunteer.address || "Not provided"}
+            </p>
+          </div>
+
+        </div>
+
+
+        <div className="flex gap-3">
+
+          <span className="text-lg">
+            🏷️
+          </span>
+
+          <div>
+            <p className="text-xs text-gray-400 font-bold uppercase">
+              Sector / Area
+            </p>
+
+            <p className="text-blue-700 font-bold">
+              {volunteer.area || "General"}
+            </p>
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
   );
 }
