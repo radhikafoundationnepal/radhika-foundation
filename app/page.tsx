@@ -17,7 +17,6 @@ import Footer from "../components/Footer";
 export default function Home() {
   return (
     <>
-      
       <Hero />
       <Impact />
       <About />
@@ -31,10 +30,7 @@ export default function Home() {
       <Notice />
       <Gallery />
       <Volunteer />
-
-      {/* GOOGLE MAP */}
       <Map />
-
       <Footer />
     </>
   );
