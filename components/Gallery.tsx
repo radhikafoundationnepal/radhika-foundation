@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getPublishedGallery } from "@/lib/firestore";
@@ -38,9 +37,7 @@ export default function Gallery() {
     <section className="py-20 md:py-28 bg-white">
       <div className="max-w-7xl mx-auto px-6">
 
-        {/* ================================
-            HEADER
-        ================================= */}
+        {/* HEADER */}
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
 
           <div className="max-w-3xl">
@@ -75,10 +72,7 @@ export default function Gallery() {
 
         </div>
 
-
-        {/* ================================
-            LOADING
-        ================================= */}
+        {/* LOADING */}
         {loading && (
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mt-12">
 
@@ -92,10 +86,7 @@ export default function Gallery() {
           </div>
         )}
 
-
-        {/* ================================
-            EMPTY
-        ================================= */}
+        {/* EMPTY */}
         {!loading && gallery.length === 0 && (
           <div className="mt-12 bg-gray-50 border border-gray-100 rounded-2xl p-12 text-center">
 
@@ -115,10 +106,7 @@ export default function Gallery() {
           </div>
         )}
 
-
-        {/* ================================
-            GALLERY GRID
-        ================================= */}
+        {/* GALLERY GRID */}
         {!loading && gallery.length > 0 && (
           <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mt-12">
 
@@ -142,14 +130,15 @@ export default function Gallery() {
 
                 {/* IMAGE */}
                 {item.image ? (
-                  <Image
+                  <img
                     src={item.image}
                     alt={item.title || "Radhika Foundation Gallery"}
-                    fill
-                    className="object-cover transition-transform duration-700 group-hover:scale-110"
+                    className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                    loading="lazy"
                   />
                 ) : (
                   <div className="absolute inset-0 flex items-center justify-center bg-blue-50">
+
                     <div className="text-center">
                       <div className="text-5xl">
                         🖼️
@@ -159,12 +148,12 @@ export default function Gallery() {
                         Radhika Foundation
                       </p>
                     </div>
+
                   </div>
                 )}
 
                 {/* OVERLAY */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent opacity-70 group-hover:opacity-90 transition" />
-
 
                 {/* CONTENT */}
                 <div className="absolute left-0 right-0 bottom-0 p-5 md:p-6 translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
@@ -194,10 +183,7 @@ export default function Gallery() {
           </div>
         )}
 
-
-        {/* ================================
-            BOTTOM CTA
-        ================================= */}
+        {/* BOTTOM CTA */}
         {!loading && gallery.length > 0 && (
           <div className="mt-12 text-center">
 
