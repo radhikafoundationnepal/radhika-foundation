@@ -19,9 +19,7 @@ export default function Home() {
       
       <Hero />
       <Impact />
-
       <About />
-
       <Programs />
       <DonateSection />
       <Services />
@@ -29,9 +27,7 @@ export default function Home() {
       <Experiences />
       <Founder />
       <News />
-
       <Notice />
-
       <Gallery />
       <Volunteer />
 
