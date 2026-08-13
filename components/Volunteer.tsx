@@ -20,10 +20,7 @@ export default function Volunteer() {
     async function loadVolunteers() {
       try {
         const data = await getVolunteers();
-
-        const approved = data as VolunteerItem[];
-
-        setVolunteers(approved);
+        setVolunteers(data as VolunteerItem[]);
       } catch (error) {
         console.error("Volunteer error:", error);
       }
@@ -32,7 +29,6 @@ export default function Volunteer() {
     loadVolunteers();
   }, []);
 
-  // Automatic slider
   useEffect(() => {
     if (volunteers.length <= 1) return;
 
@@ -45,7 +41,6 @@ export default function Volunteer() {
 
   function getVolunteer(index: number) {
     if (volunteers.length === 0) return null;
-
     return volunteers[index % volunteers.length];
   }
 
@@ -56,16 +51,12 @@ export default function Volunteer() {
     >
       <div className="max-w-7xl mx-auto px-6">
 
-        {/* ======================================
-            APPROVED VOLUNTEERS
-            BECOME A VOLUNTEER भन्दा ठीक माथि
-        ======================================= */}
+        {/* APPROVED VOLUNTEERS */}
 
         {volunteers.length > 0 && (
           <div className="mb-10">
 
             <div className="text-center mb-7">
-
               <span className="text-yellow-300 font-bold uppercase tracking-widest text-sm">
                 Our Volunteers
               </span>
@@ -73,20 +64,14 @@ export default function Volunteer() {
               <h2 className="text-2xl md:text-3xl font-extrabold text-white mt-2">
                 Meet Our Approved Volunteers
               </h2>
-
             </div>
-
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
 
-              {/* CARD 1 */}
               {getVolunteer(current) && (
-                <VolunteerCard
-                  volunteer={getVolunteer(current)!}
-                />
+                <VolunteerCard volunteer={getVolunteer(current)!} />
               )}
 
-              {/* CARD 2 */}
               {volunteers.length > 1 && (
                 <div className="hidden md:block">
                   <VolunteerCard
@@ -95,7 +80,6 @@ export default function Volunteer() {
                 </div>
               )}
 
-              {/* CARD 3 */}
               {volunteers.length > 2 && (
                 <div className="hidden lg:block">
                   <VolunteerCard
@@ -106,8 +90,8 @@ export default function Volunteer() {
 
             </div>
 
+            {/* SLIDER DOTS */}
 
-            {/* DOTS */}
             {volunteers.length > 1 && (
               <div className="flex justify-center gap-2 mt-6">
 
@@ -115,12 +99,12 @@ export default function Volunteer() {
                   <button
                     key={volunteer.id}
                     onClick={() => setCurrent(index)}
-                    className={`h-2 rounded-full transition-all ${
+                    className={
                       index === current
-                        ? "w-8 bg-yellow-300"
-                        : "w-2 bg-white/40"
-                    `}
-                    aria-label={`Volunteer ${index + 1}`}
+                        ? "w-8 h-2 rounded-full bg-yellow-300 transition-all"
+                        : "w-2 h-2 rounded-full bg-white/40 transition-all"
+                    }
+                    aria-label={"Volunteer " + (index + 1)}
                   />
                 ))}
 
@@ -130,16 +114,14 @@ export default function Volunteer() {
           </div>
         )}
 
-
-        {/* ======================================
-            BECOME A VOLUNTEER
-        ======================================= */}
+        {/* BECOME A VOLUNTEER */}
 
         <div className="bg-white rounded-3xl shadow-2xl overflow-hidden">
 
           <div className="grid md:grid-cols-2">
 
             {/* LEFT */}
+
             <div className="p-8 md:p-12">
 
               <span className="inline-block bg-blue-100 text-blue-700 px-4 py-2 rounded-full font-semibold text-sm">
@@ -170,8 +152,8 @@ export default function Volunteer() {
 
             </div>
 
-
             {/* RIGHT */}
+
             <div className="bg-blue-50 p-8 md:p-12 flex items-center">
 
               <div className="grid grid-cols-2 gap-5 w-full">
@@ -230,9 +212,7 @@ export default function Volunteer() {
 }
 
 
-/* ==========================================
-   VOLUNTEER CARD
-========================================== */
+/* VOLUNTEER CARD */
 
 function VolunteerCard({
   volunteer,
@@ -263,7 +243,6 @@ function VolunteerCard({
 
       </div>
 
-
       <div className="mt-5 space-y-3">
 
         <div className="flex gap-3">
@@ -273,6 +252,7 @@ function VolunteerCard({
           </span>
 
           <div>
+
             <p className="text-xs text-gray-400 font-bold uppercase">
               Address
             </p>
@@ -280,10 +260,10 @@ function VolunteerCard({
             <p className="text-gray-700 font-medium">
               {volunteer.address || "Not provided"}
             </p>
+
           </div>
 
         </div>
-
 
         <div className="flex gap-3">
 
@@ -292,6 +272,7 @@ function VolunteerCard({
           </span>
 
           <div>
+
             <p className="text-xs text-gray-400 font-bold uppercase">
               Sector / Area
             </p>
@@ -299,6 +280,7 @@ function VolunteerCard({
             <p className="text-blue-700 font-bold">
               {volunteer.area || "General"}
             </p>
+
           </div>
 
         </div>
