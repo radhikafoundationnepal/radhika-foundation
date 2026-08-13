@@ -392,15 +392,19 @@ const volunteersCollection = collection(db, "volunteers");
 // ADD VOLUNTEER
 // =========================================================
 
-export async function addVolunteer(data: {
+export type Volunteer = {
+  id: string;
   name: string;
   phone: string;
   email: string;
   address: string;
   area: string;
   message: string;
+  status: string;
   photoUrl?: string;
-}) {
+  createdAt?: unknown;
+  updatedAt?: unknown;
+}; {
   await addDoc(volunteersCollection, {
     name: data.name,
     phone: data.phone,
