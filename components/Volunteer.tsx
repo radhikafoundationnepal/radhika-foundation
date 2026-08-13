@@ -1,31 +1,39 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
-import {
-  addVolunteer,
-  getApprovedVolunteers,
-  Volunteer,
-} from "@/lib/firestore";
+{/* PHOTO UPLOAD */}
+<div>
+  <label className="block text-sm font-bold text-gray-700 mb-2">
+    📷 Profile Photo
+  </label>
 
-export default function Volunteer() {
-  const [volunteers, setVolunteers] = useState<Volunteer[]>([]);
-  const [current, setCurrent] = useState(0);
+  <input
+    type="file"
+    accept="image/jpeg,image/png,image/webp"
+    onChange={handlePhotoUpload}
+    disabled={uploading}
+    className="w-full rounded-xl border border-gray-200 bg-gray-50 px-4 py-3 cursor-pointer"
+  />
 
-  const [loading, setLoading] = useState(true);
-  const [submitting, setSubmitting] = useState(false);
+  {uploading && (
+    <p className="text-blue-600 text-sm mt-2">
+      ⏳ Photo uploading...
+    </p>
+  )}
 
-  const [success, setSuccess] = useState("");
-  const [error, setError] = useState("");
+  {form.photoUrl && !uploading && (
+    <div className="mt-4 flex items-center gap-4">
+      <img
+        src={form.photoUrl}
+        alt="Volunteer preview"
+        className="w-20 h-20 rounded-full object-cover border-4 border-blue-100"
+      />
 
-  const [form, setForm] = useState({
-    name: "",
-    phone: "",
-    email: "",
-    address: "",
-    area: "",
-    message: "",
-    photoUrl: "",
-  });
+      <p className="text-green-600 text-sm font-semibold">
+        ✓ Photo uploaded successfully
+      </p>
+    </div>
+  )}
+</div>
 
   // =====================================================
   // LOAD APPROVED VOLUNTEERS
