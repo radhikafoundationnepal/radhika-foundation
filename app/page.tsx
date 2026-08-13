@@ -23,6 +23,7 @@ export default function Home() {
       <About />
 
       <Programs />
+      <DonateSection />
       <Services />
       <ImpactStats />
       <Experiences />
