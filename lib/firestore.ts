@@ -63,7 +63,8 @@ export type Volunteer = {
   address: string;
   area: string;
   message: string;
-  status: string;
+  status: "pending" | "approved" | "rejected";
+  photoUrl?: string;
   createdAt?: unknown;
   updatedAt?: unknown;
 };
@@ -392,19 +393,15 @@ const volunteersCollection = collection(db, "volunteers");
 // ADD VOLUNTEER
 // =========================================================
 
-export type Volunteer = {
-  id: string;
+export async function addVolunteer(data: {
   name: string;
   phone: string;
   email: string;
   address: string;
   area: string;
   message: string;
-  status: string;
   photoUrl?: string;
-  createdAt?: unknown;
-  updatedAt?: unknown;
-}; {
+}) {
   await addDoc(volunteersCollection, {
     name: data.name,
     phone: data.phone,
@@ -484,6 +481,36 @@ export async function updateVolunteerStatus(
 export async function deleteVolunteer(id: string) {
   await deleteDoc(doc(db, "volunteers", id));
 }
+
+
+/* =========================================================
+   UPDATE VOLUNTEER
+========================================================= */
+
+export async function updateVolunteer(
+  id: string,
+  data: {
+    name: string;
+    phone: string;
+    email: string;
+    address: string;
+    area: string;
+    message: string;
+    photoUrl?: string;
+  }
+) {
+  await updateDoc(doc(db, "volunteers", id), {
+    name: data.name,
+    phone: data.phone,
+    email: data.email,
+    address: data.address,
+    area: data.area,
+    message: data.message,
+    photoUrl: data.photoUrl || "",
+    updatedAt: serverTimestamp(),
+  });
+}
+
 
 /* =========================================================
    DASHBOARD STATISTICS
