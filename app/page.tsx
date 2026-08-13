@@ -4,7 +4,6 @@ import About from "../components/About";
 import Programs from "../components/Programs";
 import DonateSection from "../components/DonateSection";
 import Services from "../components/Services";
-import ImpactStats from "../components/ImpactStats";
 import Experiences from "../components/Experiences";
 import Founder from "../components/Founder";
 import News from "../components/News";
@@ -23,7 +22,6 @@ export default function Home() {
       <Programs />
       <DonateSection />
       <Services />
-      <ImpactStats />
       <Experiences />
       <Founder />
       <News />
