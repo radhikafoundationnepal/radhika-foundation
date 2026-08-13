@@ -58,7 +58,7 @@ export default function Navbar() {
   }, []);
 
   /* =========================
-      BODY LOCK
+      BODY SCROLL LOCK
   ========================== */
 
   useEffect(() => {
@@ -72,6 +72,10 @@ export default function Navbar() {
       document.body.style.overflow = "";
     };
   }, [menuOpen, donateOpen]);
+
+  /* =========================
+      ACTIVE MENU
+  ========================== */
 
   function isActive(href: string) {
     if (href === "/") {
@@ -96,7 +100,7 @@ export default function Navbar() {
 
           <div className="flex h-10 items-center justify-between">
 
-            {/* LEFT */}
+            {/* LEFT CONTACT */}
 
             <div className="flex items-center gap-6 text-xs">
 
@@ -105,21 +109,25 @@ export default function Navbar() {
                 className="flex items-center gap-2 text-blue-100 hover:text-white transition"
               >
                 <span>📞</span>
-                <span>9800822224 / 9841424995</span>
+                <span>
+                  9800822224 / 9841424995
+                </span>
               </a>
 
               <a
-                href="mailto: radhikafoundation2078@gmail.com"
+                href="mailto:radhikafoundation2078@gmail.com"
                 className="flex items-center gap-2 text-blue-100 hover:text-white transition"
               >
                 <span>✉️</span>
-                <span>radhikafoundation2078@gmail.com</span>
+                <span>
+                  radhikafoundation2078@gmail.com
+                </span>
               </a>
 
             </div>
 
 
-            {/* RIGHT */}
+            {/* RIGHT SIDE */}
 
             <div className="flex items-center gap-5">
 
@@ -129,6 +137,8 @@ export default function Navbar() {
 
               <div className="h-4 w-px bg-white/20" />
 
+              {/* SOCIAL */}
+
               <div className="flex items-center gap-3">
 
                 <a
@@ -136,7 +146,7 @@ export default function Navbar() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="Facebook"
-                  className="text-blue-100 hover:text-white transition"
+                  className="font-bold text-blue-100 hover:text-white transition"
                 >
                   f
                 </a>
@@ -146,7 +156,7 @@ export default function Navbar() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="YouTube"
-                  className="text-blue-100 hover:text-white transition"
+                  className="font-bold text-blue-100 hover:text-white transition"
                 >
                   ▶
                 </a>
@@ -156,7 +166,7 @@ export default function Navbar() {
                   target="_blank"
                   rel="noopener noreferrer"
                   aria-label="TikTok"
-                  className="text-blue-100 hover:text-white transition"
+                  className="font-bold text-blue-100 hover:text-white transition"
                 >
                   ♪
                 </a>
@@ -188,8 +198,8 @@ export default function Navbar() {
           <div
             className={`flex items-center justify-between transition-all duration-300 ${
               scrolled
-                ? "h-[72px]"
-                : "h-[82px] md:h-[88px]"
+                ? "h-[74px]"
+                : "h-[86px] md:h-[92px]"
             }`}
           >
 
@@ -203,36 +213,63 @@ export default function Navbar() {
               className="group flex shrink-0 items-center gap-3"
             >
 
-              <div className="relative">
+              {/* LOGO IMAGE */}
+
+              <div className="relative shrink-0">
 
                 <Image
                   src="/images/logo.png"
                   alt="Radhika Foundation Nepal Logo"
-                  width={72}
-                  height={72}
+                  width={80}
+                  height={80}
                   priority
                   className={`object-contain transition-all duration-300 ${
                     scrolled
                       ? "h-14 w-14"
-                      : "h-16 w-16 md:h-[70px] md:w-[70px]"
+                      : "h-[68px] w-[68px] md:h-[76px] md:w-[76px]"
                   }`}
                 />
 
               </div>
 
 
-              <div className="leading-tight">
+              {/* LOGO TEXT */}
 
-                <h1 className="text-base sm:text-lg md:text-xl font-extrabold text-blue-700 group-hover:text-blue-800 transition">
+              <div className="leading-none">
+
+                <h1
+                  className="
+                    whitespace-nowrap
+                    text-xl
+                    sm:text-2xl
+                    md:text-[28px]
+                    lg:text-[30px]
+                    font-black
+                    tracking-tight
+                    text-blue-700
+                    transition-all
+                    duration-300
+                    group-hover:text-blue-800
+                  "
+                >
                   Radhika Foundation
                 </h1>
 
-                <div className="flex items-center gap-2 mt-1">
 
-                  <span className="h-1.5 w-1.5 rounded-full bg-red-500" />
+                <div className="mt-2 flex items-center gap-2">
 
-                  <p className="text-[11px] sm:text-xs font-semibold tracking-wider text-gray-500 uppercase">
-                    Nepal
+                  <span className="h-1.5 w-8 rounded-full bg-red-500" />
+
+                  <p
+                    className="
+                      text-xs
+                      sm:text-sm
+                      font-extrabold
+                      tracking-[0.28em]
+                      text-gray-500
+                    "
+                  >
+                    NEPAL
                   </p>
 
                 </div>
@@ -243,7 +280,7 @@ export default function Navbar() {
 
 
             {/* =================================================
-                DESKTOP NAVIGATION
+                DESKTOP MENU
             ================================================== */}
 
             <nav className="hidden lg:flex items-center gap-1">
@@ -256,23 +293,48 @@ export default function Navbar() {
                   <Link
                     key={item.href}
                     href={item.href}
-                    className={`group relative px-3 xl:px-3.5 py-3 text-sm font-bold whitespace-nowrap transition-colors ${
-                      active
-                        ? "text-blue-700"
-                        : "text-gray-700 hover:text-blue-700"
-                    }`}
+                    className={`
+                      group
+                      relative
+                      px-3.5
+                      xl:px-4
+                      py-3.5
+                      text-base
+                      xl:text-[17px]
+                      font-extrabold
+                      tracking-tight
+                      whitespace-nowrap
+                      transition-all
+                      duration-300
+                      ${
+                        active
+                          ? "text-blue-700"
+                          : "text-gray-700 hover:text-blue-700"
+                      }
+                    `}
                   >
 
                     {item.name}
 
-                    {/* ACTIVE LINE */}
+                    {/* ACTIVE / HOVER LINE */}
 
                     <span
-                      className={`absolute bottom-0 left-3 right-3 h-0.5 rounded-full bg-blue-700 transition-all duration-300 ${
-                        active
-                          ? "opacity-100 scale-x-100"
-                          : "opacity-0 scale-x-0 group-hover:opacity-100 group-hover:scale-x-100"
-                      }`}
+                      className={`
+                        absolute
+                        bottom-0
+                        left-3
+                        right-3
+                        h-[3px]
+                        rounded-full
+                        bg-blue-700
+                        transition-all
+                        duration-300
+                        ${
+                          active
+                            ? "opacity-100 scale-x-100"
+                            : "opacity-0 scale-x-0 group-hover:opacity-100 group-hover:scale-x-100"
+                        }
+                      `}
                     />
 
                   </Link>
@@ -284,13 +346,33 @@ export default function Navbar() {
 
 
             {/* =================================================
-                DESKTOP DONATE
+                DONATE BUTTON
             ================================================== */}
 
             <button
               type="button"
               onClick={() => setDonateOpen(true)}
-              className="hidden lg:inline-flex items-center gap-2 rounded-full bg-red-600 px-5 xl:px-6 py-3 text-sm font-extrabold text-white shadow-lg shadow-red-600/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-red-700 hover:shadow-xl"
+              className="
+                hidden
+                lg:inline-flex
+                items-center
+                gap-2
+                rounded-full
+                bg-red-600
+                px-6
+                xl:px-7
+                py-3.5
+                text-base
+                font-extrabold
+                text-white
+                shadow-lg
+                shadow-red-600/20
+                transition-all
+                duration-300
+                hover:-translate-y-0.5
+                hover:bg-red-700
+                hover:shadow-xl
+              "
             >
               <span>❤️</span>
               <span>Donate Now</span>
@@ -304,7 +386,19 @@ export default function Navbar() {
             <button
               type="button"
               onClick={() => setMenuOpen(!menuOpen)}
-              className="lg:hidden flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-blue-700 transition hover:bg-blue-100"
+              className="
+                lg:hidden
+                flex
+                h-11
+                w-11
+                items-center
+                justify-center
+                rounded-xl
+                bg-blue-50
+                text-blue-700
+                transition
+                hover:bg-blue-100
+              "
               aria-label="Toggle navigation menu"
               aria-expanded={menuOpen}
             >
@@ -343,11 +437,22 @@ export default function Navbar() {
                       key={item.href}
                       href={item.href}
                       onClick={closeMenu}
-                      className={`flex items-center justify-between rounded-xl px-4 py-3.5 font-bold transition ${
-                        active
-                          ? "bg-blue-50 text-blue-700"
-                          : "text-gray-700 hover:bg-gray-50 hover:text-blue-700"
-                      }`}
+                      className={`
+                        flex
+                        items-center
+                        justify-between
+                        rounded-xl
+                        px-4
+                        py-3.5
+                        text-base
+                        font-extrabold
+                        transition
+                        ${
+                          active
+                            ? "bg-blue-50 text-blue-700"
+                            : "text-gray-700 hover:bg-gray-50 hover:text-blue-700"
+                        }
+                      `}
                     >
 
                       <span>
@@ -377,7 +482,24 @@ export default function Navbar() {
                     setMenuOpen(false);
                     setDonateOpen(true);
                   }}
-                  className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-red-600 px-5 py-3.5 font-extrabold text-white shadow-lg transition hover:bg-red-700"
+                  className="
+                    mt-3
+                    flex
+                    w-full
+                    items-center
+                    justify-center
+                    gap-2
+                    rounded-xl
+                    bg-red-600
+                    px-5
+                    py-3.5
+                    text-base
+                    font-extrabold
+                    text-white
+                    shadow-lg
+                    transition
+                    hover:bg-red-700
+                  "
                 >
                   ❤️ Donate Now
                 </button>
@@ -419,7 +541,7 @@ export default function Navbar() {
                 </div>
 
 
-                {/* SOCIAL */}
+                {/* MOBILE SOCIAL */}
 
                 <div className="mt-5 flex items-center gap-3">
 
@@ -427,7 +549,21 @@ export default function Navbar() {
                     href="https://www.facebook.com/radhikafoundation"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex h-10 w-10 items-center justify-center rounded-full bg-white font-bold text-blue-700 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+                    className="
+                      flex
+                      h-10
+                      w-10
+                      items-center
+                      justify-center
+                      rounded-full
+                      bg-white
+                      font-bold
+                      text-blue-700
+                      shadow-sm
+                      transition
+                      hover:-translate-y-1
+                      hover:shadow-md
+                    "
                   >
                     f
                   </a>
@@ -436,7 +572,21 @@ export default function Navbar() {
                     href="https://www.youtube.com/@radhikadaasiofficial"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex h-10 w-10 items-center justify-center rounded-full bg-white font-bold text-red-600 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+                    className="
+                      flex
+                      h-10
+                      w-10
+                      items-center
+                      justify-center
+                      rounded-full
+                      bg-white
+                      font-bold
+                      text-red-600
+                      shadow-sm
+                      transition
+                      hover:-translate-y-1
+                      hover:shadow-md
+                    "
                   >
                     ▶
                   </a>
@@ -445,7 +595,21 @@ export default function Navbar() {
                     href="https://www.tiktok.com/@radhikadaasiofficial"
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex h-10 w-10 items-center justify-center rounded-full bg-white font-bold text-gray-800 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+                    className="
+                      flex
+                      h-10
+                      w-10
+                      items-center
+                      justify-center
+                      rounded-full
+                      bg-white
+                      font-bold
+                      text-gray-800
+                      shadow-sm
+                      transition
+                      hover:-translate-y-1
+                      hover:shadow-md
+                    "
                   >
                     ♪
                   </a>
@@ -470,28 +634,65 @@ export default function Navbar() {
       {donateOpen && (
 
         <div
-          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm"
+          className="
+            fixed
+            inset-0
+            z-[9999]
+            flex
+            items-center
+            justify-center
+            bg-black/75
+            p-4
+            backdrop-blur-sm
+          "
           onClick={() => setDonateOpen(false)}
         >
 
           <div
-            className="relative max-h-[95vh] w-full max-w-lg overflow-auto rounded-3xl bg-white shadow-2xl"
+            className="
+              relative
+              max-h-[95vh]
+              w-full
+              max-w-lg
+              overflow-auto
+              rounded-3xl
+              bg-white
+              shadow-2xl
+            "
             onClick={(e) => e.stopPropagation()}
           >
 
-            {/* CLOSE */}
+            {/* CLOSE BUTTON */}
 
             <button
               type="button"
               onClick={() => setDonateOpen(false)}
-              className="absolute right-4 top-4 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-white text-2xl font-bold text-gray-700 shadow-lg transition hover:bg-gray-100"
+              className="
+                absolute
+                right-4
+                top-4
+                z-20
+                flex
+                h-10
+                w-10
+                items-center
+                justify-center
+                rounded-full
+                bg-white
+                text-2xl
+                font-bold
+                text-gray-700
+                shadow-lg
+                transition
+                hover:bg-gray-100
+              "
               aria-label="Close donation popup"
             >
               ×
             </button>
 
 
-            {/* HEADER */}
+            {/* POPUP HEADER */}
 
             <div className="bg-gradient-to-r from-blue-800 to-blue-700 px-6 py-7 text-center text-white">
 
@@ -510,7 +711,7 @@ export default function Navbar() {
             </div>
 
 
-            {/* QR */}
+            {/* QR IMAGE */}
 
             <div className="p-6 sm:p-8 text-center">
 
@@ -537,14 +738,24 @@ export default function Navbar() {
             </div>
 
 
-            {/* FOOTER */}
+            {/* POPUP FOOTER */}
 
             <div className="border-t bg-gray-50 px-6 py-5 text-center">
 
               <button
                 type="button"
                 onClick={() => setDonateOpen(false)}
-                className="rounded-xl bg-blue-700 px-7 py-3 font-bold text-white shadow-md transition hover:bg-blue-800"
+                className="
+                  rounded-xl
+                  bg-blue-700
+                  px-7
+                  py-3
+                  font-bold
+                  text-white
+                  shadow-md
+                  transition
+                  hover:bg-blue-800
+                "
               >
                 Close
               </button>
