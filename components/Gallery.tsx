@@ -1,31 +1,31 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { getPublishedGallery } from "@/lib/firestore";
 
 type GalleryItem = {
   id: string;
-  title: string;
-  image: string;
+  title?: string;
+  image?: string;
+  createdAt?: {
+    seconds?: number;
+  };
 };
 
 export default function Gallery() {
   const [gallery, setGallery] = useState<GalleryItem[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const [selectedImage, setSelectedImage] =
-    useState<GalleryItem | null>(null);
-
   useEffect(() => {
     async function loadGallery() {
       try {
         const data = await getPublishedGallery();
 
-        // Home page मा पछिल्ला 4 वटा photo मात्र
-        setGallery((data as GalleryItem[]).slice(0, 4));
+        setGallery((data as GalleryItem[]).slice(0, 6));
       } catch (error) {
-        console.error("Gallery load error:", error);
+        console.error("Gallery loading error:", error);
       } finally {
         setLoading(false);
       }
@@ -34,125 +34,160 @@ export default function Gallery() {
     loadGallery();
   }, []);
 
-  // ESC key ले modal बन्द गर्ने
-  useEffect(() => {
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === "Escape") {
-        setSelectedImage(null);
-      }
-    }
-
-    window.addEventListener("keydown", handleKeyDown);
-
-    return () => {
-      window.removeEventListener(
-        "keydown",
-        handleKeyDown
-      );
-    };
-  }, []);
-
   return (
-    <section
-      id="gallery"
-      className="py-24 bg-gray-100"
-    >
+    <section className="py-20 md:py-28 bg-white">
       <div className="max-w-7xl mx-auto px-6">
 
-        {/* HEADER */}
+        {/* ================================
+            HEADER
+        ================================= */}
+        <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
 
-        <div className="text-center mb-14">
+          <div className="max-w-3xl">
 
-          <h2 className="text-4xl md:text-5xl font-bold text-blue-700">
-            Gallery
-          </h2>
+            <div className="flex items-center gap-3">
+              <span className="w-10 h-1 bg-red-500 rounded-full" />
 
-          <p className="text-gray-600 mt-3">
-            Radhika Foundation Nepal का कार्यक्रम तथा गतिविधिहरू
-          </p>
+              <span className="uppercase tracking-widest text-sm font-bold text-blue-700">
+                Our Gallery
+              </span>
+            </div>
+
+            <h2 className="mt-5 text-3xl md:text-4xl lg:text-5xl font-extrabold text-gray-900">
+              Moments That Matter
+            </h2>
+
+            <p className="mt-5 text-gray-600 text-lg leading-8">
+              Radhika Foundation Nepal का कार्यक्रम,
+              सेवा तथा सामाजिक गतिविधिका केही सम्झनायोग्य
+              तस्बिरहरू।
+            </p>
+
+          </div>
+
+          <Link
+            href="/gallery"
+            className="inline-flex items-center gap-2 shrink-0 bg-blue-700 hover:bg-blue-800 text-white px-6 py-3 rounded-lg font-bold shadow-md transition"
+          >
+            View Full Gallery
+            <span>→</span>
+          </Link>
 
         </div>
 
 
-        {/* LOADING */}
-
+        {/* ================================
+            LOADING
+        ================================= */}
         {loading && (
-          <div className="text-center py-10">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mt-12">
 
-            <p className="text-gray-500">
-              Loading gallery...
-            </p>
+            {[1, 2, 3, 4, 5, 6].map((item) => (
+              <div
+                key={item}
+                className="h-56 md:h-72 bg-gray-100 rounded-2xl animate-pulse"
+              />
+            ))}
 
           </div>
         )}
 
 
-        {/* NO PHOTO */}
-
+        {/* ================================
+            EMPTY
+        ================================= */}
         {!loading && gallery.length === 0 && (
-          <div className="bg-white rounded-2xl shadow p-10 text-center">
+          <div className="mt-12 bg-gray-50 border border-gray-100 rounded-2xl p-12 text-center">
 
-            <h3 className="text-xl font-semibold text-gray-700">
-              अहिले Gallery मा कुनै photo छैन।
+            <div className="text-6xl">
+              🖼️
+            </div>
+
+            <h3 className="text-xl font-bold text-gray-800 mt-4">
+              Gallery Coming Soon
             </h3>
 
             <p className="text-gray-500 mt-2">
-              नयाँ photo प्रकाशित भएपछि यहाँ देखिनेछ।
+              हाम्रो कार्यक्रम तथा गतिविधिका तस्बिरहरू
+              चाँडै यहाँ प्रकाशित हुनेछन्।
             </p>
 
           </div>
         )}
 
 
-        {/* GALLERY */}
-
+        {/* ================================
+            GALLERY GRID
+        ================================= */}
         {!loading && gallery.length > 0 && (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 md:grid-cols-3 gap-4 md:gap-6 mt-12">
 
-            {gallery.map((item) => (
+            {gallery.map((item, index) => (
 
-              <button
+              <Link
                 key={item.id}
-                type="button"
-                onClick={() => setSelectedImage(item)}
-                className="group text-left bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-2xl hover:-translate-y-1 transition duration-300 focus:outline-none focus:ring-2 focus:ring-blue-600"
+                href="/gallery"
+                className={`
+                  group relative overflow-hidden rounded-2xl
+                  shadow-lg hover:shadow-2xl
+                  transition-all duration-500
+                  bg-gray-100
+                  ${
+                    index === 0
+                      ? "md:row-span-2 h-80 md:h-[600px]"
+                      : "h-56 md:h-72"
+                  }
+                `}
               >
 
                 {/* IMAGE */}
-
-                <div className="relative overflow-hidden">
-
-                  <img
+                {item.image ? (
+                  <Image
                     src={item.image}
-                    alt={item.title}
-                    className="w-full h-56 object-cover group-hover:scale-105 transition duration-300"
-                    loading="lazy"
+                    alt={item.title || "Radhika Foundation Gallery"}
+                    fill
+                    className="object-cover transition-transform duration-700 group-hover:scale-110"
                   />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center bg-blue-50">
+                    <div className="text-center">
+                      <div className="text-5xl">
+                        🖼️
+                      </div>
 
-                  {/* VIEW */}
+                      <p className="text-blue-700 font-semibold mt-2">
+                        Radhika Foundation
+                      </p>
+                    </div>
+                  </div>
+                )}
 
-                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition flex items-center justify-center">
+                {/* OVERLAY */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent opacity-70 group-hover:opacity-90 transition" />
 
-                    <span className="opacity-0 group-hover:opacity-100 transition bg-white/90 text-gray-800 rounded-full px-4 py-2 font-semibold">
-                      🔍 View
+
+                {/* CONTENT */}
+                <div className="absolute left-0 right-0 bottom-0 p-5 md:p-6 translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
+
+                  <div className="flex items-center gap-2 text-white/80 text-xs uppercase tracking-wider font-semibold">
+                    <span>📷</span>
+                    <span>Radhika Foundation</span>
+                  </div>
+
+                  <h3 className="mt-2 text-white text-lg md:text-xl font-extrabold">
+                    {item.title || "Our Activities"}
+                  </h3>
+
+                  <div className="mt-3 inline-flex items-center gap-2 text-yellow-300 font-bold text-sm">
+                    View Gallery
+                    <span className="group-hover:translate-x-1 transition">
+                      →
                     </span>
-
                   </div>
 
                 </div>
 
-
-                {/* TITLE */}
-
-                <div className="p-4">
-
-                  <h3 className="font-bold text-lg text-gray-800 line-clamp-2">
-                    {item.title}
-                  </h3>
-
-                </div>
-
-              </button>
+              </Link>
 
             ))}
 
@@ -160,75 +195,24 @@ export default function Gallery() {
         )}
 
 
-        {/* VIEW ALL GALLERY */}
-
+        {/* ================================
+            BOTTOM CTA
+        ================================= */}
         {!loading && gallery.length > 0 && (
-          <div className="text-center mt-12">
+          <div className="mt-12 text-center">
 
             <Link
               href="/gallery"
-              className="inline-block bg-blue-700 hover:bg-blue-800 text-white px-7 py-3 rounded-lg font-bold transition"
+              className="inline-flex items-center gap-2 border-2 border-blue-700 text-blue-700 hover:bg-blue-700 hover:text-white px-7 py-3 rounded-lg font-bold transition"
             >
-              View All Gallery →
+              Explore More Photos
+              <span>→</span>
             </Link>
 
           </div>
         )}
 
       </div>
-
-
-      {/* =========================
-          IMAGE MODAL
-      ========================== */}
-
-      {selectedImage && (
-        <div
-          className="fixed inset-0 z-[100] bg-black/80 flex items-center justify-center p-4"
-          onClick={() => setSelectedImage(null)}
-        >
-
-          <div
-            className="relative max-w-5xl w-full max-h-[90vh] flex flex-col items-center"
-            onClick={(e) => e.stopPropagation()}
-          >
-
-            {/* CLOSE */}
-
-            <button
-              type="button"
-              onClick={() => setSelectedImage(null)}
-              className="absolute -top-12 right-0 md:right-2 w-10 h-10 rounded-full bg-white text-gray-800 text-2xl font-bold hover:bg-gray-200 transition"
-              aria-label="Close image"
-            >
-              ×
-            </button>
-
-
-            {/* LARGE IMAGE */}
-
-            <img
-              src={selectedImage.image}
-              alt={selectedImage.title}
-              className="max-w-full max-h-[75vh] object-contain rounded-xl shadow-2xl"
-            />
-
-
-            {/* TITLE */}
-
-            <div className="bg-white rounded-xl px-6 py-4 mt-4 max-w-2xl w-full text-center">
-
-              <h3 className="text-xl md:text-2xl font-bold text-gray-800">
-                {selectedImage.title}
-              </h3>
-
-            </div>
-
-          </div>
-
-        </div>
-      )}
-
     </section>
   );
 }
