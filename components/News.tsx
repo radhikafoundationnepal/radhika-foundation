@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useEffect, useState } from "react";
 import { getNews } from "@/lib/firestore";
 
@@ -56,9 +55,8 @@ export default function News() {
 
       <div className="max-w-7xl mx-auto px-6">
 
-        {/* =========================================
-            SECTION HEADER
-        ========================================== */}
+        {/* HEADER */}
+
         <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6">
 
           <div className="max-w-3xl">
@@ -86,6 +84,7 @@ export default function News() {
 
 
           {/* VIEW ALL */}
+
           <Link
             href="/news"
             className="inline-flex items-center gap-2 shrink-0 bg-blue-700 hover:bg-blue-800 text-white px-6 py-3 rounded-lg font-bold shadow-md transition"
@@ -97,13 +96,13 @@ export default function News() {
         </div>
 
 
-        {/* =========================================
-            LOADING
-        ========================================== */}
+        {/* LOADING */}
+
         {loading && (
           <div className="grid md:grid-cols-3 gap-7 mt-12">
 
             {[1, 2, 3].map((item) => (
+
               <div
                 key={item}
                 className="bg-gray-100 rounded-2xl overflow-hidden animate-pulse"
@@ -124,16 +123,17 @@ export default function News() {
                 </div>
 
               </div>
+
             ))}
 
           </div>
         )}
 
 
-        {/* =========================================
-            EMPTY
-        ========================================== */}
+        {/* EMPTY */}
+
         {!loading && news.length === 0 && (
+
           <div className="mt-12 bg-gray-50 border border-gray-100 rounded-2xl p-10 text-center">
 
             <div className="text-5xl">
@@ -149,13 +149,14 @@ export default function News() {
             </p>
 
           </div>
+
         )}
 
 
-        {/* =========================================
-            NEWS CARDS
-        ========================================== */}
+        {/* NEWS CARDS */}
+
         {!loading && news.length > 0 && (
+
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-7 mt-12">
 
             {news.map((item) => (
@@ -166,6 +167,7 @@ export default function News() {
               >
 
                 {/* IMAGE */}
+
                 <Link
                   href={`/news/${item.id}`}
                   className="block"
@@ -175,11 +177,14 @@ export default function News() {
 
                     {item.imageUrl ? (
 
-                      <Image
+                      <img
                         src={item.imageUrl}
-                        alt={item.title || "Radhika Foundation News"}
-                        fill
-                        className="object-cover transition-transform duration-700 group-hover:scale-110"
+                        alt={
+                          item.title ||
+                          "Radhika Foundation News"
+                        }
+                        className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                        loading="lazy"
                       />
 
                     ) : (
@@ -203,6 +208,7 @@ export default function News() {
                     )}
 
                     {/* OVERLAY */}
+
                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-60" />
 
                   </div>
@@ -211,9 +217,11 @@ export default function News() {
 
 
                 {/* CONTENT */}
+
                 <div className="p-6">
 
                   {/* DATE */}
+
                   <div className="flex items-center gap-2 text-sm">
 
                     <span className="text-red-600">
@@ -228,11 +236,13 @@ export default function News() {
 
 
                   {/* TITLE */}
+
                   <Link href={`/news/${item.id}`}>
 
                     <h3 className="mt-4 text-xl font-extrabold text-gray-900 leading-7 group-hover:text-blue-700 transition">
 
-                      {item.title || "Radhika Foundation News"}
+                      {item.title ||
+                        "Radhika Foundation News"}
 
                     </h3>
 
@@ -240,6 +250,7 @@ export default function News() {
 
 
                   {/* EXCERPT */}
+
                   <p className="mt-3 text-gray-500 text-sm leading-6 line-clamp-3">
 
                     {item.excerpt ||
@@ -250,6 +261,7 @@ export default function News() {
 
 
                   {/* READ MORE */}
+
                   <Link
                     href={`/news/${item.id}`}
                     className="inline-flex items-center gap-2 mt-5 text-blue-700 font-bold hover:text-blue-900 transition"
@@ -259,6 +271,7 @@ export default function News() {
                     <span className="group-hover:translate-x-1 transition-transform">
                       →
                     </span>
+
                   </Link>
 
                 </div>
@@ -268,13 +281,14 @@ export default function News() {
             ))}
 
           </div>
+
         )}
 
 
-        {/* =========================================
-            BOTTOM CTA
-        ========================================== */}
+        {/* BOTTOM CTA */}
+
         {!loading && news.length > 0 && (
+
           <div className="mt-12 text-center">
 
             <Link
@@ -286,6 +300,7 @@ export default function News() {
             </Link>
 
           </div>
+
         )}
 
       </div>
