@@ -1,12 +1,16 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useState } from "react";
 import Image from "next/image";
+import { useEffect, useState } from "react";
+import { usePathname } from "next/navigation";
 
 export default function Navbar() {
+  const pathname = usePathname();
+
   const [menuOpen, setMenuOpen] = useState(false);
   const [donateOpen, setDonateOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   const menuItems = [
     { name: "Home", href: "/" },
@@ -18,7 +22,26 @@ export default function Navbar() {
     { name: "Contact", href: "/contact" },
   ];
 
-  // ESC थिच्दा popup बन्द गर्ने
+  /* =========================
+      SCROLL EFFECT
+  ========================== */
+
+  useEffect(() => {
+    function handleScroll() {
+      setScrolled(window.scrollY > 20);
+    }
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
+  /* =========================
+      ESC KEY
+  ========================== */
+
   useEffect(() => {
     function handleKeyDown(e: KeyboardEvent) {
       if (e.key === "Escape") {
@@ -34,166 +57,476 @@ export default function Navbar() {
     };
   }, []);
 
+  /* =========================
+      BODY LOCK
+  ========================== */
+
+  useEffect(() => {
+    if (menuOpen || donateOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [menuOpen, donateOpen]);
+
+  function isActive(href: string) {
+    if (href === "/") {
+      return pathname === "/";
+    }
+
+    return pathname.startsWith(href);
+  }
+
+  function closeMenu() {
+    setMenuOpen(false);
+  }
+
   return (
     <>
-      {/* =========================
-          NAVBAR
-      ========================== */}
-      <header className="sticky top-0 z-50 bg-white shadow-md border-b border-gray-100">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6">
+      {/* =====================================================
+          TOP CONTACT BAR
+      ====================================================== */}
 
-          {/* MAIN NAVBAR */}
-          <div className="flex items-center justify-between h-20">
+      <div className="hidden lg:block bg-blue-950 text-white">
+        <div className="max-w-7xl mx-auto px-6">
 
-            {/* LOGO */}
+          <div className="flex h-10 items-center justify-between">
+
+            {/* LEFT */}
+
+            <div className="flex items-center gap-6 text-xs">
+
+              <a
+                href="tel:9800822224"
+                className="flex items-center gap-2 text-blue-100 hover:text-white transition"
+              >
+                <span>📞</span>
+                <span>9800822224 / 9841424995</span>
+              </a>
+
+              <a
+                href="mailto: radhikafoundation2078@gmail.com"
+                className="flex items-center gap-2 text-blue-100 hover:text-white transition"
+              >
+                <span>✉️</span>
+                <span>radhikafoundation2078@gmail.com</span>
+              </a>
+
+            </div>
+
+
+            {/* RIGHT */}
+
+            <div className="flex items-center gap-5">
+
+              <span className="text-blue-200 text-xs">
+                Kanakai-6, Manasapur, Jhapa, Nepal
+              </span>
+
+              <div className="h-4 w-px bg-white/20" />
+
+              <div className="flex items-center gap-3">
+
+                <a
+                  href="https://www.facebook.com/radhikafoundation"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="Facebook"
+                  className="text-blue-100 hover:text-white transition"
+                >
+                  f
+                </a>
+
+                <a
+                  href="https://www.youtube.com/@radhikadaasiofficial"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="YouTube"
+                  className="text-blue-100 hover:text-white transition"
+                >
+                  ▶
+                </a>
+
+                <a
+                  href="https://www.tiktok.com/@radhikadaasiofficial"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  aria-label="TikTok"
+                  className="text-blue-100 hover:text-white transition"
+                >
+                  ♪
+                </a>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+      </div>
+
+
+      {/* =====================================================
+          MAIN NAVBAR
+      ====================================================== */}
+
+      <header
+        className={`sticky top-0 z-50 border-b transition-all duration-300 ${
+          scrolled
+            ? "border-gray-200 bg-white/95 shadow-xl backdrop-blur-md"
+            : "border-gray-100 bg-white shadow-sm"
+        }`}
+      >
+
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+
+          <div
+            className={`flex items-center justify-between transition-all duration-300 ${
+              scrolled
+                ? "h-[72px]"
+                : "h-[82px] md:h-[88px]"
+            }`}
+          >
+
+            {/* =================================================
+                LOGO
+            ================================================== */}
+
             <Link
               href="/"
-              className="flex items-center gap-3 shrink-0"
-              onClick={() => setMenuOpen(false)}
+              onClick={closeMenu}
+              className="group flex shrink-0 items-center gap-3"
             >
-              <Image
-                src="/images/logo.png"
-                alt="Radhika Foundation Nepal Logo"
-                width={64}
-                height={64}
-                className="w-14 h-14 md:w-16 md:h-16 object-contain"
-                priority
-              />
+
+              <div className="relative">
+
+                <Image
+                  src="/images/logo.png"
+                  alt="Radhika Foundation Nepal Logo"
+                  width={72}
+                  height={72}
+                  priority
+                  className={`object-contain transition-all duration-300 ${
+                    scrolled
+                      ? "h-14 w-14"
+                      : "h-16 w-16 md:h-[70px] md:w-[70px]"
+                  }`}
+                />
+
+              </div>
+
 
               <div className="leading-tight">
-                <h1 className="font-bold text-lg md:text-xl text-blue-700">
+
+                <h1 className="text-base sm:text-lg md:text-xl font-extrabold text-blue-700 group-hover:text-blue-800 transition">
                   Radhika Foundation
                 </h1>
 
-                <p className="text-xs md:text-sm text-gray-500 mt-1">
-                  Nepal
-                </p>
+                <div className="flex items-center gap-2 mt-1">
+
+                  <span className="h-1.5 w-1.5 rounded-full bg-red-500" />
+
+                  <p className="text-[11px] sm:text-xs font-semibold tracking-wider text-gray-500 uppercase">
+                    Nepal
+                  </p>
+
+                </div>
+
               </div>
+
             </Link>
 
-            {/* DESKTOP MENU */}
-            <nav className="hidden md:flex items-center gap-5 lg:gap-6">
 
-              {menuItems.map((item) => (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className="text-gray-700 font-medium hover:text-blue-700 transition duration-200 whitespace-nowrap"
-                >
-                  {item.name}
-                </Link>
-              ))}
+            {/* =================================================
+                DESKTOP NAVIGATION
+            ================================================== */}
 
-              {/* DONATE BUTTON */}
-              <button
-                type="button"
-                onClick={() => setDonateOpen(true)}
-                className="bg-blue-700 hover:bg-blue-800 text-white px-5 py-3 rounded-lg font-bold transition duration-200 whitespace-nowrap shadow-sm hover:shadow-md"
-              >
-                ❤️ Donate
-              </button>
+            <nav className="hidden lg:flex items-center gap-1">
+
+              {menuItems.map((item) => {
+
+                const active = isActive(item.href);
+
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    className={`group relative px-3 xl:px-3.5 py-3 text-sm font-bold whitespace-nowrap transition-colors ${
+                      active
+                        ? "text-blue-700"
+                        : "text-gray-700 hover:text-blue-700"
+                    }`}
+                  >
+
+                    {item.name}
+
+                    {/* ACTIVE LINE */}
+
+                    <span
+                      className={`absolute bottom-0 left-3 right-3 h-0.5 rounded-full bg-blue-700 transition-all duration-300 ${
+                        active
+                          ? "opacity-100 scale-x-100"
+                          : "opacity-0 scale-x-0 group-hover:opacity-100 group-hover:scale-x-100"
+                      }`}
+                    />
+
+                  </Link>
+                );
+
+              })}
 
             </nav>
 
-            {/* MOBILE MENU BUTTON */}
+
+            {/* =================================================
+                DESKTOP DONATE
+            ================================================== */}
+
+            <button
+              type="button"
+              onClick={() => setDonateOpen(true)}
+              className="hidden lg:inline-flex items-center gap-2 rounded-full bg-red-600 px-5 xl:px-6 py-3 text-sm font-extrabold text-white shadow-lg shadow-red-600/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-red-700 hover:shadow-xl"
+            >
+              <span>❤️</span>
+              <span>Donate Now</span>
+            </button>
+
+
+            {/* =================================================
+                MOBILE MENU BUTTON
+            ================================================== */}
+
             <button
               type="button"
               onClick={() => setMenuOpen(!menuOpen)}
-              className="md:hidden text-gray-700 hover:text-blue-700 text-3xl leading-none p-2"
+              className="lg:hidden flex h-11 w-11 items-center justify-center rounded-xl bg-blue-50 text-blue-700 transition hover:bg-blue-100"
               aria-label="Toggle navigation menu"
               aria-expanded={menuOpen}
             >
-              {menuOpen ? "×" : "☰"}
+
+              {menuOpen ? (
+                <span className="text-3xl leading-none">
+                  ×
+                </span>
+              ) : (
+                <span className="text-2xl leading-none">
+                  ☰
+                </span>
+              )}
+
             </button>
 
           </div>
 
-          {/* MOBILE MENU */}
+
+          {/* =================================================
+              MOBILE MENU
+          ================================================== */}
+
           {menuOpen && (
-            <nav className="md:hidden border-t border-gray-100 py-4">
 
-              <div className="flex flex-col gap-1">
+            <div className="lg:hidden border-t border-gray-100 py-4">
 
-                {menuItems.map((item) => (
-                  <Link
-                    key={item.href}
-                    href={item.href}
-                    onClick={() => setMenuOpen(false)}
-                    className="py-3 px-3 text-gray-700 font-medium hover:bg-blue-50 hover:text-blue-700 rounded-lg transition duration-200"
-                  >
-                    {item.name}
-                  </Link>
-                ))}
+              <nav className="flex flex-col gap-1">
+
+                {menuItems.map((item) => {
+
+                  const active = isActive(item.href);
+
+                  return (
+                    <Link
+                      key={item.href}
+                      href={item.href}
+                      onClick={closeMenu}
+                      className={`flex items-center justify-between rounded-xl px-4 py-3.5 font-bold transition ${
+                        active
+                          ? "bg-blue-50 text-blue-700"
+                          : "text-gray-700 hover:bg-gray-50 hover:text-blue-700"
+                      }`}
+                    >
+
+                      <span>
+                        {item.name}
+                      </span>
+
+                      <span
+                        className={
+                          active
+                            ? "text-blue-700"
+                            : "text-gray-300"
+                        }
+                      >
+                        →
+                      </span>
+
+                    </Link>
+                  );
+                })}
+
 
                 {/* MOBILE DONATE */}
+
                 <button
                   type="button"
                   onClick={() => {
                     setMenuOpen(false);
                     setDonateOpen(true);
                   }}
-                  className="mt-3 bg-blue-700 hover:bg-blue-800 text-white text-center px-5 py-3 rounded-lg font-bold transition duration-200"
+                  className="mt-3 flex w-full items-center justify-center gap-2 rounded-xl bg-red-600 px-5 py-3.5 font-extrabold text-white shadow-lg transition hover:bg-red-700"
                 >
-                  ❤️ Donate
+                  ❤️ Donate Now
                 </button>
+
+              </nav>
+
+
+              {/* MOBILE CONTACT */}
+
+              <div className="mt-5 rounded-2xl bg-blue-50 p-5">
+
+                <p className="text-xs font-extrabold uppercase tracking-widest text-blue-700">
+                  Contact Us
+                </p>
+
+                <div className="mt-3 space-y-3 text-sm">
+
+                  <a
+                    href="tel:9800822224"
+                    className="flex items-center gap-3 font-semibold text-gray-700"
+                  >
+                    <span>📞</span>
+                    9800822224 / 9841424995
+                  </a>
+
+                  <a
+                    href="mailto:radhikafoundation2078@gmail.com"
+                    className="flex items-center gap-3 break-all font-semibold text-gray-700"
+                  >
+                    <span>✉️</span>
+                    radhikafoundation2078@gmail.com
+                  </a>
+
+                  <p className="flex items-start gap-3 font-semibold text-gray-700">
+                    <span>📍</span>
+                    Kanakai-6, Manasapur, Jhapa
+                  </p>
+
+                </div>
+
+
+                {/* SOCIAL */}
+
+                <div className="mt-5 flex items-center gap-3">
+
+                  <a
+                    href="https://www.facebook.com/radhikafoundation"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex h-10 w-10 items-center justify-center rounded-full bg-white font-bold text-blue-700 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+                  >
+                    f
+                  </a>
+
+                  <a
+                    href="https://www.youtube.com/@radhikadaasiofficial"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex h-10 w-10 items-center justify-center rounded-full bg-white font-bold text-red-600 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+                  >
+                    ▶
+                  </a>
+
+                  <a
+                    href="https://www.tiktok.com/@radhikadaasiofficial"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex h-10 w-10 items-center justify-center rounded-full bg-white font-bold text-gray-800 shadow-sm transition hover:-translate-y-1 hover:shadow-md"
+                  >
+                    ♪
+                  </a>
+
+                </div>
 
               </div>
 
-            </nav>
+            </div>
+
           )}
 
         </div>
+
       </header>
 
-      {/* =========================
+
+      {/* =====================================================
           DONATION QR POPUP
-      ========================== */}
+      ====================================================== */}
+
       {donateOpen && (
+
         <div
-          className="fixed inset-0 z-[9999] bg-black/70 flex items-center justify-center p-4"
+          className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/75 p-4 backdrop-blur-sm"
           onClick={() => setDonateOpen(false)}
         >
 
           <div
-            className="relative bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden"
+            className="relative max-h-[95vh] w-full max-w-lg overflow-auto rounded-3xl bg-white shadow-2xl"
             onClick={(e) => e.stopPropagation()}
           >
 
-            {/* CLOSE BUTTON */}
+            {/* CLOSE */}
+
             <button
               type="button"
               onClick={() => setDonateOpen(false)}
-              className="absolute top-3 right-3 z-10 w-10 h-10 rounded-full bg-white shadow-md text-gray-700 text-2xl font-bold hover:bg-gray-100 transition"
+              className="absolute right-4 top-4 z-20 flex h-10 w-10 items-center justify-center rounded-full bg-white text-2xl font-bold text-gray-700 shadow-lg transition hover:bg-gray-100"
               aria-label="Close donation popup"
             >
               ×
             </button>
 
+
             {/* HEADER */}
-            <div className="bg-blue-700 text-white text-center px-6 py-5">
-              <h2 className="text-2xl md:text-3xl font-bold">
+
+            <div className="bg-gradient-to-r from-blue-800 to-blue-700 px-6 py-7 text-center text-white">
+
+              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-white/15 text-2xl">
+                ❤️
+              </div>
+
+              <h2 className="mt-4 text-2xl md:text-3xl font-extrabold">
                 Support Radhika Foundation
               </h2>
 
-              <p className="mt-2 text-blue-100">
+              <p className="mt-2 text-sm md:text-base text-blue-100">
                 तपाईंको सानो सहयोगले ठूलो परिवर्तन ल्याउन सक्छ।
               </p>
+
             </div>
 
-            {/* QR IMAGE */}
-            <div className="p-6 text-center">
 
-              <div className="flex justify-center">
+            {/* QR */}
+
+            <div className="p-6 sm:p-8 text-center">
+
+              <div className="mx-auto flex max-w-[380px] items-center justify-center rounded-2xl border border-gray-100 bg-white p-3 shadow-md">
+
                 <Image
                   src="/images/donation-qr.png"
                   alt="Radhika Foundation Donation QR Code"
                   width={420}
                   height={420}
-                  className="w-full max-w-[380px] h-auto rounded-xl object-contain"
+                  className="h-auto w-full rounded-xl object-contain"
                 />
+
               </div>
 
-              <p className="mt-4 text-gray-600 font-medium">
+              <p className="mt-5 font-bold text-gray-700">
                 Scan the QR code to make a donation
               </p>
 
@@ -203,20 +536,27 @@ export default function Navbar() {
 
             </div>
 
+
             {/* FOOTER */}
-            <div className="bg-gray-50 px-6 py-4 text-center border-t">
+
+            <div className="border-t bg-gray-50 px-6 py-5 text-center">
+
               <button
                 type="button"
                 onClick={() => setDonateOpen(false)}
-                className="bg-blue-700 hover:bg-blue-800 text-white px-6 py-2 rounded-lg font-semibold transition"
+                className="rounded-xl bg-blue-700 px-7 py-3 font-bold text-white shadow-md transition hover:bg-blue-800"
               >
                 Close
               </button>
+
             </div>
 
           </div>
+
         </div>
+
       )}
+
     </>
   );
 }
