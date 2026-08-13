@@ -1,12 +1,17 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
-import { useEffect, useRef, useState } from "react";
+import { useRef, useState } from "react";
 
-const teamMembers = [
+type TeamMember = {
+  name: string;
+  post: string;
+  image: string;
+};
+
+const teamMembers: TeamMember[] = [
   {
-    name: "अन्जु आचार्य",
+    name: "अञ्जु आचार्य",
     post: "वरिष्ठ उपाध्यक्ष",
     image:
       "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgzjSojmJxmMqwLk9ReKiiGYXfrBOaFTXVseiR3cbsfgFmZ8CeVPYY8b1TxqhYHIUboVX_GTC33xuui_JnLj3QgRqxZZmzpxBpUZCnxr4i8Ofk8JcYeAFX43b_lzlBNH0Z8HMZc_YwME5voy9jxV7wr-oVFoogVrrb4O7ln4Ygc3_LRJ6nG7nNZb_vdrh4/s403/Anju%20aacharya.jpg",
@@ -57,135 +62,98 @@ const teamMembers = [
 
 export default function Founder() {
   const sliderRef = useRef<HTMLDivElement>(null);
-  const [currentIndex, setCurrentIndex] = useState(0);
+  const [active, setActive] = useState(0);
 
-  /* =========================
-     AUTO SLIDE
-  ========================== */
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentIndex((prev) => {
-        const next = prev + 1;
-
-        if (next >= teamMembers.length) {
-          return 0;
-        }
-
-        return next;
-      });
-    }, 4000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-  /* =========================
-     MOVE SLIDER
-  ========================== */
-
-  useEffect(() => {
+  const scrollSlider = (direction: "left" | "right") => {
     if (!sliderRef.current) return;
 
-    const container = sliderRef.current;
+    const amount = direction === "right" ? 340 : -340;
 
-    const card = container.querySelector(
-      "[data-team-card]"
-    ) as HTMLElement | null;
-
-    if (!card) return;
-
-    const gap = 20;
-
-    const cardWidth = card.offsetWidth + gap;
-
-    container.scrollTo({
-      left: currentIndex * cardWidth,
+    sliderRef.current.scrollBy({
+      left: amount,
       behavior: "smooth",
     });
-  }, [currentIndex]);
 
-  function previousSlide() {
-    setCurrentIndex((prev) =>
-      prev === 0 ? teamMembers.length - 1 : prev - 1
-    );
-  }
+    setActive((prev) => {
+      if (direction === "right") {
+        return Math.min(prev + 1, teamMembers.length - 1);
+      }
 
-  function nextSlide() {
-    setCurrentIndex((prev) =>
-      prev === teamMembers.length - 1 ? 0 : prev + 1
-    );
-  }
+      return Math.max(prev - 1, 0);
+    });
+  };
 
   return (
-    <section className="relative overflow-hidden bg-gray-50 py-20 md:py-28">
+    <section className="relative py-20 md:py-28 bg-gradient-to-b from-white via-blue-50/40 to-white overflow-hidden">
 
-      <div className="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
+      {/* BACKGROUND DECORATION */}
+      <div className="absolute top-0 left-0 w-72 h-72 bg-blue-100/40 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
+      <div className="absolute bottom-0 right-0 w-80 h-80 bg-red-100/30 rounded-full blur-3xl translate-x-1/3 translate-y-1/3" />
 
-        {/* =====================================================
-            HEADER
-        ====================================================== */}
+      <div className="relative max-w-7xl mx-auto px-5 sm:px-6">
 
-        <div className="mb-12 text-center">
+        {/* ================================
+            SECTION HEADER
+        ================================= */}
+        <div className="text-center max-w-3xl mx-auto mb-12 md:mb-16">
 
-          <span className="inline-flex items-center gap-2 rounded-full bg-blue-100 px-5 py-2 text-sm font-extrabold text-blue-700">
-            👩‍💼 Leadership
+          <span className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-5 py-2 rounded-full font-bold text-sm shadow-sm">
+            👩‍💼 Our Leadership
           </span>
 
-          <h2 className="mt-5 text-3xl font-black text-blue-700 sm:text-4xl md:text-5xl">
+          <h2 className="mt-5 text-4xl sm:text-5xl md:text-6xl font-black text-blue-700 tracking-tight">
             Founder & Leadership
           </h2>
 
-          <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-gray-600 sm:text-lg">
-            Radhika Foundation Nepal को सेवा यात्रालाई
-            नेतृत्व तथा सहयोग प्रदान गर्ने व्यक्तित्वहरू
+          <div className="flex justify-center items-center gap-3 mt-5">
+            <span className="w-12 h-1 bg-red-500 rounded-full" />
+            <span className="w-3 h-3 bg-blue-700 rounded-full" />
+            <span className="w-12 h-1 bg-red-500 rounded-full" />
+          </div>
+
+          <p className="text-gray-600 mt-5 text-base md:text-lg leading-8">
+            Radhika Foundation Nepal को सेवा यात्रालाई नेतृत्व तथा
+            सहयोग प्रदान गर्ने व्यक्तित्वहरू
           </p>
 
         </div>
 
 
-        {/* =====================================================
-            MAIN LAYOUT
-        ====================================================== */}
+        {/* ================================
+            FOUNDER FEATURE
+        ================================= */}
+        <div className="bg-white rounded-[2rem] shadow-xl border border-gray-100 overflow-hidden">
 
-        <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(330px,0.85fr)_minmax(0,1.65fr)]">
+          <div className="grid grid-cols-1 lg:grid-cols-2">
 
-
-          {/* =================================================
-              FOUNDER
-          ================================================== */}
-
-          <div className="group overflow-hidden rounded-3xl bg-white shadow-xl ring-1 ring-gray-100">
-
-            {/* IMAGE */}
-
-            <div className="relative h-[420px] overflow-hidden sm:h-[500px]">
+            {/* FOUNDER IMAGE */}
+            <div className="relative min-h-[430px] sm:min-h-[500px] lg:min-h-[570px]">
 
               <Image
                 src="/images/founder.jpg"
                 alt="भागवत मञ्जरी राधिका दासी"
                 fill
                 priority
-                className="object-cover transition duration-700 group-hover:scale-105"
+                className="object-cover"
               />
 
-              {/* OVERLAY */}
+              {/* IMAGE GRADIENT */}
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
 
-              <div className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/10 to-transparent" />
+              {/* FOUNDER NAME */}
+              <div className="absolute left-6 right-6 bottom-6 md:left-10 md:right-10 md:bottom-10">
 
+                <span className="inline-block bg-yellow-400 text-gray-900 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider">
+                  Founder
+                </span>
 
-              {/* FOUNDER INFO */}
-
-              <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8">
-
-                <div className="mb-2 inline-flex rounded-full bg-yellow-400 px-3 py-1 text-xs font-black text-gray-900">
-                  FOUNDER
-                </div>
-
-                <h3 className="text-2xl font-black text-white sm:text-3xl">
-                  भागवत मञ्जरी राधिका दासी
+                <h3 className="mt-3 text-3xl sm:text-4xl md:text-5xl font-black text-white leading-tight">
+                  भागवत मञ्जरी
+                  <br />
+                  राधिका दासी
                 </h3>
 
-                <p className="mt-2 text-sm font-medium text-white/80">
+                <p className="mt-3 text-white/90 font-semibold">
                   Founder & Social Leader
                 </p>
 
@@ -194,187 +162,177 @@ export default function Founder() {
             </div>
 
 
-            {/* FOUNDER CONTENT */}
+            {/* FOUNDER DETAILS */}
+            <div className="p-7 sm:p-9 md:p-12 lg:p-14 flex flex-col justify-center">
 
-            <div className="p-6 sm:p-8">
+              <span className="text-blue-700 font-black text-sm uppercase tracking-[0.2em]">
+                Founder & Social Leader
+              </span>
 
-              <div className="h-1 w-16 rounded-full bg-blue-700" />
+              <h3 className="mt-4 text-3xl sm:text-4xl font-black text-gray-900 leading-tight">
+                सेवाबाट सकारात्मक परिवर्तनतर्फ
+              </h3>
 
-              <p className="mt-5 text-base leading-7 text-gray-600">
+              <div className="mt-5 w-20 h-1.5 bg-blue-700 rounded-full" />
+
+              <p className="mt-7 text-gray-600 text-base md:text-lg leading-8">
                 Radhika Foundation Nepal को सामाजिक सेवा तथा
-                मानवीय सहयोगको यात्रामा नेतृत्वदायी भूमिका
-                निर्वाह गर्दै आउनुभएको छ।
+                मानवीय सहयोगको यात्रामा नेतृत्वदायी भूमिका निर्वाह
+                गर्दै आउनुभएको छ।
               </p>
 
-              <p className="mt-4 text-sm leading-7 text-gray-500">
-                शिक्षा, स्वास्थ्य, सामाजिक सेवा तथा आवश्यकतामा
-                रहेका व्यक्तिहरूको सहयोगका लागि Foundation मार्फत
-                निरन्तर सेवा र सकारात्मक परिवर्तनको अभियान
-                अघि बढाउँदै आउनुभएको छ।
+              <p className="mt-4 text-gray-600 leading-7">
+                शिक्षा, स्वास्थ्य, सामाजिक सेवा तथा आवश्यकतामा रहेका
+                व्यक्तिहरूको सहयोगका लागि Foundation मार्फत निरन्तर
+                सेवा र सकारात्मक परिवर्तनको अभियान अघि बढाउँदै
+                आउनुभएको छ।
               </p>
 
 
               {/* VALUES */}
+              <div className="grid grid-cols-3 gap-3 sm:gap-4 mt-8">
 
-              <div className="mt-6 grid grid-cols-3 gap-2">
-
-                <div className="rounded-xl bg-blue-50 p-3 text-center">
-                  <div className="text-xl">❤️</div>
-                  <p className="mt-1 text-xs font-bold text-gray-700">
+                <div className="bg-blue-50 rounded-2xl p-4 text-center border border-blue-100 hover:shadow-md transition">
+                  <div className="text-2xl sm:text-3xl">❤️</div>
+                  <p className="font-bold text-gray-700 mt-2">
                     सेवा
                   </p>
                 </div>
 
-                <div className="rounded-xl bg-blue-50 p-3 text-center">
-                  <div className="text-xl">🤝</div>
-                  <p className="mt-1 text-xs font-bold text-gray-700">
+                <div className="bg-blue-50 rounded-2xl p-4 text-center border border-blue-100 hover:shadow-md transition">
+                  <div className="text-2xl sm:text-3xl">🤝</div>
+                  <p className="font-bold text-gray-700 mt-2">
                     सहयोग
                   </p>
                 </div>
 
-                <div className="rounded-xl bg-blue-50 p-3 text-center">
-                  <div className="text-xl">🌱</div>
-                  <p className="mt-1 text-xs font-bold text-gray-700">
+                <div className="bg-blue-50 rounded-2xl p-4 text-center border border-blue-100 hover:shadow-md transition">
+                  <div className="text-2xl sm:text-3xl">🌱</div>
+                  <p className="font-bold text-gray-700 mt-2">
                     परिवर्तन
                   </p>
                 </div>
 
               </div>
 
-              <Link
-                href="/about"
-                className="mt-7 inline-flex items-center gap-2 rounded-xl bg-blue-700 px-6 py-3 font-bold text-white shadow-lg transition hover:bg-blue-800 hover:-translate-y-0.5"
+
+              {/* BUTTON */}
+              <div className="mt-8">
+
+                <a
+                  href="/about"
+                  className="inline-flex items-center gap-2 bg-blue-700 hover:bg-blue-800 text-white px-7 py-3.5 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all"
+                >
+                  Read More
+                  <span>→</span>
+                </a>
+
+              </div>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        {/* ================================
+            OUR TEAM
+        ================================= */}
+        <div className="mt-16 md:mt-20">
+
+          {/* TEAM HEADER */}
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-5 mb-7">
+
+            <div>
+
+              <span className="text-blue-700 text-sm font-black uppercase tracking-[0.2em]">
+                Our Team
+              </span>
+
+              <h3 className="mt-2 text-3xl sm:text-4xl font-black text-gray-900">
+                Foundation Members
+              </h3>
+
+              <p className="mt-2 text-gray-500">
+                Foundation लाई अघि बढाउने हाम्रो समर्पित टोली
+              </p>
+
+            </div>
+
+
+            {/* ARROWS */}
+            <div className="flex gap-3">
+
+              <button
+                type="button"
+                onClick={() => scrollSlider("left")}
+                className="w-12 h-12 rounded-full bg-white border border-gray-200 shadow-md hover:bg-blue-700 hover:text-white hover:border-blue-700 transition font-bold text-xl"
+                aria-label="Previous team members"
               >
-                Read More
-                <span>→</span>
-              </Link>
+                ←
+              </button>
+
+              <button
+                type="button"
+                onClick={() => scrollSlider("right")}
+                className="w-12 h-12 rounded-full bg-blue-700 text-white shadow-md hover:bg-blue-800 transition font-bold text-xl"
+                aria-label="Next team members"
+              >
+                →
+              </button>
 
             </div>
 
           </div>
 
 
-          {/* =================================================
-              TEAM SLIDER
-          ================================================== */}
+          {/* TEAM SLIDER */}
+          <div
+            ref={sliderRef}
+            className="flex gap-5 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-5"
+            style={{
+              scrollbarWidth: "none",
+              msOverflowStyle: "none",
+            }}
+          >
 
-          <div className="relative min-w-0">
+            {teamMembers.map((member, index) => (
 
+              <div
+                key={member.name}
+                className="group flex-none w-[280px] sm:w-[310px] md:w-[330px] snap-start"
+              >
 
-            {/* TEAM HEADER */}
+                <div className="bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
 
-            <div className="mb-5 flex items-center justify-between">
+                  {/* PHOTO */}
+                  <div className="relative h-[300px] sm:h-[320px] bg-blue-50 overflow-hidden">
 
-              <div>
-
-                <p className="text-sm font-extrabold uppercase tracking-widest text-blue-700">
-                  Our Team
-                </p>
-
-                <h3 className="mt-1 text-2xl font-black text-gray-900 sm:text-3xl">
-                  Foundation Members
-                </h3>
-
-              </div>
-
-
-              {/* ARROWS */}
-
-              <div className="hidden gap-2 sm:flex">
-
-                <button
-                  type="button"
-                  onClick={previousSlide}
-                  aria-label="Previous team member"
-                  className="flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-xl font-bold text-gray-700 shadow-sm transition hover:bg-blue-700 hover:text-white"
-                >
-                  ←
-                </button>
-
-                <button
-                  type="button"
-                  onClick={nextSlide}
-                  aria-label="Next team member"
-                  className="flex h-11 w-11 items-center justify-center rounded-full border border-gray-200 bg-white text-xl font-bold text-gray-700 shadow-sm transition hover:bg-blue-700 hover:text-white"
-                >
-                  →
-                </button>
-
-              </div>
-
-            </div>
-
-
-            {/* SLIDER */}
-
-            <div
-              ref={sliderRef}
-              className="
-                flex
-                gap-5
-                overflow-x-hidden
-                scroll-smooth
-                pb-4
-              "
-            >
-
-              {teamMembers.map((member, index) => (
-
-                <div
-                  key={member.name}
-                  data-team-card
-                  className="
-                    group
-                    relative
-                    min-w-[270px]
-                    overflow-hidden
-                    rounded-3xl
-                    bg-white
-                    shadow-lg
-                    ring-1
-                    ring-gray-100
-                    transition
-                    duration-500
-                    hover:-translate-y-2
-                    hover:shadow-2xl
-                    sm:min-w-[290px]
-                    lg:min-w-[300px]
-                  "
-                >
-
-                  {/* IMAGE */}
-
-                  <div className="relative h-[330px] overflow-hidden bg-blue-50">
-
-                    <Image
+                    <img
                       src={member.image}
                       alt={member.name}
-                      fill
-                      sizes="(max-width: 768px) 90vw, 300px"
-                      className="object-cover transition duration-700 group-hover:scale-105"
+                      loading="lazy"
+                      referrerPolicy="no-referrer"
+                      className="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
                     />
 
-                    {/* IMAGE GRADIENT */}
-
+                    {/* GRADIENT */}
                     <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent" />
 
-
                     {/* NUMBER */}
-
-                    <div className="absolute left-4 top-4 flex h-9 w-9 items-center justify-center rounded-full bg-white/90 text-sm font-black text-blue-700 shadow">
+                    <div className="absolute top-4 left-4 w-10 h-10 rounded-full bg-white/95 text-blue-700 flex items-center justify-center font-black shadow-md">
                       {String(index + 1).padStart(2, "0")}
                     </div>
 
+                    {/* NAME ON PHOTO */}
+                    <div className="absolute bottom-5 left-5 right-5">
 
-                    {/* NAME ON IMAGE */}
-
-                    <div className="absolute bottom-0 left-0 right-0 p-5">
-
-                      <h4 className="text-xl font-black text-white">
+                      <h4 className="text-2xl font-black text-white">
                         {member.name}
                       </h4>
 
-                      <p className="mt-1 text-sm font-semibold text-yellow-300">
+                      <p className="text-yellow-300 font-bold mt-1">
                         {member.post}
                       </p>
 
@@ -384,22 +342,19 @@ export default function Founder() {
 
 
                   {/* CARD FOOTER */}
-
-                  <div className="flex items-center justify-between p-5">
+                  <div className="p-5 flex items-center justify-between">
 
                     <div>
-
-                      <p className="text-xs font-bold uppercase tracking-wider text-gray-400">
+                      <p className="text-xs text-gray-400 font-bold uppercase tracking-wider">
                         Radhika Foundation
                       </p>
 
-                      <p className="mt-1 font-bold text-gray-700">
+                      <p className="text-gray-700 font-bold mt-1">
                         {member.post}
                       </p>
-
                     </div>
 
-                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-50 text-blue-700 transition group-hover:bg-blue-700 group-hover:text-white">
+                    <div className="w-11 h-11 rounded-full bg-blue-50 text-blue-700 flex items-center justify-center font-bold group-hover:bg-blue-700 group-hover:text-white transition">
                       →
                     </div>
 
@@ -407,67 +362,43 @@ export default function Founder() {
 
                 </div>
 
-              ))}
+              </div>
 
-            </div>
+            ))}
+
+          </div>
 
 
-            {/* =================================================
-                MOBILE ARROWS
-            ================================================== */}
+          {/* SLIDER DOTS */}
+          <div className="flex justify-center gap-2 mt-4">
 
-            <div className="mt-3 flex justify-center gap-3 sm:hidden">
-
-              <button
-                type="button"
-                onClick={previousSlide}
-                className="flex h-11 w-11 items-center justify-center rounded-full bg-white text-xl font-bold text-blue-700 shadow-md"
-                aria-label="Previous"
-              >
-                ←
-              </button>
+            {teamMembers.map((_, index) => (
 
               <button
+                key={index}
                 type="button"
-                onClick={nextSlide}
-                className="flex h-11 w-11 items-center justify-center rounded-full bg-blue-700 text-xl font-bold text-white shadow-md"
-                aria-label="Next"
-              >
-                →
-              </button>
+                onClick={() => {
+                  if (!sliderRef.current) return;
 
-            </div>
+                  const cardWidth =
+                    sliderRef.current.firstElementChild?.clientWidth || 300;
 
+                  sliderRef.current.scrollTo({
+                    left: index * (cardWidth + 20),
+                    behavior: "smooth",
+                  });
 
-            {/* =================================================
-                DOTS
-            ================================================== */}
+                  setActive(index);
+                }}
+                className={`h-2.5 rounded-full transition-all ${
+                  active === index
+                    ? "w-8 bg-blue-700"
+                    : "w-2.5 bg-gray-300"
+                }`}
+                aria-label={`Go to team member ${index + 1}`}
+              />
 
-            <div className="mt-5 flex justify-center gap-2">
-
-              {teamMembers.map((member, index) => (
-
-                <button
-                  key={member.name}
-                  type="button"
-                  onClick={() => setCurrentIndex(index)}
-                  aria-label={`View ${member.name}`}
-                  className={`
-                    h-2.5
-                    rounded-full
-                    transition-all
-                    duration-300
-                    ${
-                      currentIndex === index
-                        ? "w-8 bg-blue-700"
-                        : "w-2.5 bg-gray-300 hover:bg-blue-400"
-                    }
-                  `}
-                />
-
-              ))}
-
-            </div>
+            ))}
 
           </div>
 
