@@ -1,20 +1,21 @@
 "use client";
 
 import Image from "next/image";
-import { useRef, useState } from "react";
+import Link from "next/link";
+import { useEffect, useState } from "react";
 
-type TeamMember = {
+type Member = {
   name: string;
   post: string;
   image: string;
 };
 
-const teamMembers: TeamMember[] = [
+const members: Member[] = [
   {
-    name: "अञ्जु आचार्य",
+    name: "अन्जु आचार्य",
     post: "वरिष्ठ उपाध्यक्ष",
     image:
-      "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgzjSojmJxmMqwLk9ReKiiGYXfrBOaFTXVseiR3cbsfgFmZ8CeVPYY8b1TxqhYHIUboVX_GTC33xuui_JnLj3QgRqxZZmzpxBpUZCnxr4i8Ofk8JcYeAFX43b_lzlBNH0Z8HMZc_YwME5voy9jxV7wr-oVFoogVrrb4O7ln4Ygc3_LRJ6nG7nNZb_vdrh4/s403/Anju%20aacharya.jpg",
+      "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgzjSojmJxmMqwLk9ReKiiGYXfrBOaFTXVseiR3cbsfgFmZ8CeVPYY8b1TxqhYHIUboVX_GTC33xuijNlj3QgRqxZZmzpxBpUZCnxr4i8Ofk8JcYeAFX43b_lzlBNH0Z8HMZc_YwME5voy9jxV7wr-oVFoogVrrb4O7ln4Ygc3_LRJ6nG7nNZb_vdrh4/s403/Anju%20aacharya.jpg",
   },
   {
     name: "कैलाश गर्तौला",
@@ -50,7 +51,7 @@ const teamMembers: TeamMember[] = [
     name: "पंकज नेपाल",
     post: "जनसम्पर्क",
     image:
-      "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhlxFrIpTg5Nq8S8pMpGUsOIDw0UQOhmSMLgEvkGc-VCyO9J4Z0-SOa0X96TMacugt0xGstRlEus85IrOWf0WVMW4nMTI3FMhUg2offnNWgk0DBjJZMxz-WzGW72fcPwkZFdMQZVC9FQ4HLu1_OVk43mMEM3ntUg2u_cWp005N7cwm5JEtUIM-gQxoGUqE/s750/pankaj%20ji.jpg",
+      "https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEhlxFrIpTg5Nq8S8pMpGUsOIDw0UQOhmSMLgEvkGc-VCyO9J4Z0-SOa0X96TMacugt0xGstRlEus85IrOWf0WVMW4nMTI3FMhUg2offnNWgk0DBjJZMxz-WzGW72fcPwkZFdMQZVC9FQ4HLu1_OVk43mMEM3ntUg2u_cWp005N7cwm5JEtUIM-gQxoGQe/s750/pankaj%20ji.jpg",
   },
   {
     name: "मिलन चौहान",
@@ -61,73 +62,109 @@ const teamMembers: TeamMember[] = [
 ];
 
 export default function Founder() {
-  const sliderRef = useRef<HTMLDivElement>(null);
-  const [active, setActive] = useState(0);
+  const [current, setCurrent] = useState(0);
 
-  const scrollSlider = (direction: "left" | "right") => {
-    if (!sliderRef.current) return;
+  /*
+   * Desktop मा 3 वटा card देखाउने,
+   * mobile मा 1 वटा card देखाउने।
+   */
+  const getVisibleCount = () => {
+    if (typeof window === "undefined") return 3;
+    if (window.innerWidth < 640) return 1;
+    if (window.innerWidth < 1024) return 2;
+    return 3;
+  };
 
-    const amount = direction === "right" ? 340 : -340;
+  const [visibleCount, setVisibleCount] = useState(3);
 
-    sliderRef.current.scrollBy({
-      left: amount,
-      behavior: "smooth",
-    });
+  useEffect(() => {
+    const update = () => {
+      setVisibleCount(getVisibleCount());
+    };
 
-    setActive((prev) => {
-      if (direction === "right") {
-        return Math.min(prev + 1, teamMembers.length - 1);
-      }
+    update();
 
-      return Math.max(prev - 1, 0);
-    });
+    window.addEventListener("resize", update);
+
+    return () => {
+      window.removeEventListener("resize", update);
+    };
+  }, []);
+
+  /*
+   * AUTO SLIDE
+   */
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setCurrent((prev) => {
+        const max = Math.max(0, members.length - visibleCount);
+
+        if (prev >= max) {
+          return 0;
+        }
+
+        return prev + 1;
+      });
+    }, 3500);
+
+    return () => clearInterval(timer);
+  }, [visibleCount]);
+
+  const maxIndex = Math.max(0, members.length - visibleCount);
+
+  const nextSlide = () => {
+    setCurrent((prev) => (prev >= maxIndex ? 0 : prev + 1));
+  };
+
+  const prevSlide = () => {
+    setCurrent((prev) => (prev <= 0 ? maxIndex : prev - 1));
   };
 
   return (
-    <section className="relative py-20 md:py-28 bg-gradient-to-b from-white via-blue-50/40 to-white overflow-hidden">
+    <section className="relative overflow-hidden bg-gradient-to-b from-white via-blue-50/30 to-white py-20 md:py-28">
 
       {/* BACKGROUND DECORATION */}
-      <div className="absolute top-0 left-0 w-72 h-72 bg-blue-100/40 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
-      <div className="absolute bottom-0 right-0 w-80 h-80 bg-red-100/30 rounded-full blur-3xl translate-x-1/3 translate-y-1/3" />
+      <div className="pointer-events-none absolute -top-32 -left-32 w-80 h-80 rounded-full bg-blue-100/50 blur-3xl" />
+      <div className="pointer-events-none absolute top-1/3 -right-40 w-96 h-96 rounded-full bg-red-100/40 blur-3xl" />
 
       <div className="relative max-w-7xl mx-auto px-5 sm:px-6">
 
-        {/* ================================
+        {/* =====================================
             SECTION HEADER
-        ================================= */}
+        ====================================== */}
         <div className="text-center max-w-3xl mx-auto mb-12 md:mb-16">
 
           <span className="inline-flex items-center gap-2 bg-blue-100 text-blue-700 px-5 py-2 rounded-full font-bold text-sm shadow-sm">
-            👩‍💼 Our Leadership
+            👑 Founder & Leadership
           </span>
 
-          <h2 className="mt-5 text-4xl sm:text-5xl md:text-6xl font-black text-blue-700 tracking-tight">
+          <h2 className="mt-5 text-4xl sm:text-5xl lg:text-6xl font-black tracking-tight text-blue-700">
             Founder & Leadership
           </h2>
 
-          <div className="flex justify-center items-center gap-3 mt-5">
+          <div className="flex items-center justify-center gap-3 mt-5">
             <span className="w-12 h-1 bg-red-500 rounded-full" />
-            <span className="w-3 h-3 bg-blue-700 rounded-full" />
+            <span className="w-3 h-3 rounded-full bg-blue-700" />
             <span className="w-12 h-1 bg-red-500 rounded-full" />
           </div>
 
-          <p className="text-gray-600 mt-5 text-base md:text-lg leading-8">
-            Radhika Foundation Nepal को सेवा यात्रालाई नेतृत्व तथा
-            सहयोग प्रदान गर्ने व्यक्तित्वहरू
+          <p className="mt-5 text-gray-600 text-base md:text-lg leading-8">
+            Radhika Foundation Nepal को सेवा यात्रालाई नेतृत्व
+            तथा सहयोग प्रदान गर्ने व्यक्तित्वहरू
           </p>
 
         </div>
 
 
-        {/* ================================
-            FOUNDER FEATURE
-        ================================= */}
-        <div className="bg-white rounded-[2rem] shadow-xl border border-gray-100 overflow-hidden">
+        {/* =====================================
+            FEATURED FOUNDER
+        ====================================== */}
+        <div className="relative bg-white rounded-[2rem] shadow-xl border border-gray-100 overflow-hidden">
 
-          <div className="grid grid-cols-1 lg:grid-cols-2">
+          <div className="grid grid-cols-1 lg:grid-cols-5">
 
             {/* FOUNDER IMAGE */}
-            <div className="relative min-h-[430px] sm:min-h-[500px] lg:min-h-[570px]">
+            <div className="lg:col-span-2 relative min-h-[420px] sm:min-h-[500px] lg:min-h-[560px]">
 
               <Image
                 src="/images/founder.jpg"
@@ -138,24 +175,29 @@ export default function Founder() {
               />
 
               {/* IMAGE GRADIENT */}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
 
-              {/* FOUNDER NAME */}
-              <div className="absolute left-6 right-6 bottom-6 md:left-10 md:right-10 md:bottom-10">
+              {/* FOUNDER BADGE */}
+              <div className="absolute top-6 left-6">
 
-                <span className="inline-block bg-yellow-400 text-gray-900 px-4 py-1.5 rounded-full text-xs font-black uppercase tracking-wider">
-                  Founder
+                <span className="inline-flex items-center gap-2 bg-yellow-400 text-gray-900 px-4 py-2 rounded-full text-xs sm:text-sm font-black shadow-lg">
+                  ⭐ FOUNDER
                 </span>
 
-                <h3 className="mt-3 text-3xl sm:text-4xl md:text-5xl font-black text-white leading-tight">
-                  भागवत मञ्जरी
-                  <br />
-                  राधिका दासी
-                </h3>
+              </div>
 
-                <p className="mt-3 text-white/90 font-semibold">
+              {/* NAME */}
+              <div className="absolute bottom-0 left-0 right-0 p-6 sm:p-8">
+
+                <p className="text-blue-200 font-bold text-sm uppercase tracking-widest">
                   Founder & Social Leader
                 </p>
+
+                <h3 className="mt-2 text-3xl sm:text-4xl font-black text-white leading-tight">
+                  भागवत मञ्जरी
+                  <br className="sm:hidden" />
+                  राधिका दासी
+                </h3>
 
               </div>
 
@@ -163,19 +205,23 @@ export default function Founder() {
 
 
             {/* FOUNDER DETAILS */}
-            <div className="p-7 sm:p-9 md:p-12 lg:p-14 flex flex-col justify-center">
+            <div className="lg:col-span-3 p-7 sm:p-10 lg:p-14 flex flex-col justify-center">
 
-              <span className="text-blue-700 font-black text-sm uppercase tracking-[0.2em]">
-                Founder & Social Leader
-              </span>
+              <div className="flex items-center gap-3">
 
-              <h3 className="mt-4 text-3xl sm:text-4xl font-black text-gray-900 leading-tight">
-                सेवाबाट सकारात्मक परिवर्तनतर्फ
+                <span className="w-10 h-1 bg-red-500 rounded-full" />
+
+                <span className="text-blue-700 font-black text-sm uppercase tracking-widest">
+                  Founder & Social Leader
+                </span>
+
+              </div>
+
+              <h3 className="mt-5 text-3xl sm:text-4xl lg:text-5xl font-black text-gray-900 leading-tight">
+                भागवत मञ्जरी राधिका दासी ज्यू
               </h3>
 
-              <div className="mt-5 w-20 h-1.5 bg-blue-700 rounded-full" />
-
-              <p className="mt-7 text-gray-600 text-base md:text-lg leading-8">
+              <p className="mt-6 text-gray-600 text-base sm:text-lg leading-8">
                 Radhika Foundation Nepal को सामाजिक सेवा तथा
                 मानवीय सहयोगको यात्रामा नेतृत्वदायी भूमिका निर्वाह
                 गर्दै आउनुभएको छ।
@@ -183,32 +229,38 @@ export default function Founder() {
 
               <p className="mt-4 text-gray-600 leading-7">
                 शिक्षा, स्वास्थ्य, सामाजिक सेवा तथा आवश्यकतामा रहेका
-                व्यक्तिहरूको सहयोगका लागि Foundation मार्फत निरन्तर
-                सेवा र सकारात्मक परिवर्तनको अभियान अघि बढाउँदै
-                आउनुभएको छ।
+                व्यक्तिहरूको सहयोगका लागि Foundation मार्फत
+                निरन्तर सेवा र सकारात्मक परिवर्तनको अभियान अघि
+                बढाउँदै आउनुभएको छ।
               </p>
 
 
               {/* VALUES */}
-              <div className="grid grid-cols-3 gap-3 sm:gap-4 mt-8">
+              <div className="grid grid-cols-3 gap-3 sm:gap-5 mt-8">
 
-                <div className="bg-blue-50 rounded-2xl p-4 text-center border border-blue-100 hover:shadow-md transition">
-                  <div className="text-2xl sm:text-3xl">❤️</div>
-                  <p className="font-bold text-gray-700 mt-2">
+                <div className="group rounded-2xl bg-blue-50 hover:bg-blue-700 p-4 sm:p-5 text-center transition duration-300">
+                  <div className="text-2xl sm:text-3xl group-hover:scale-110 transition">
+                    ❤️
+                  </div>
+                  <p className="mt-2 font-bold text-gray-700 group-hover:text-white">
                     सेवा
                   </p>
                 </div>
 
-                <div className="bg-blue-50 rounded-2xl p-4 text-center border border-blue-100 hover:shadow-md transition">
-                  <div className="text-2xl sm:text-3xl">🤝</div>
-                  <p className="font-bold text-gray-700 mt-2">
+                <div className="group rounded-2xl bg-blue-50 hover:bg-blue-700 p-4 sm:p-5 text-center transition duration-300">
+                  <div className="text-2xl sm:text-3xl group-hover:scale-110 transition">
+                    🤝
+                  </div>
+                  <p className="mt-2 font-bold text-gray-700 group-hover:text-white">
                     सहयोग
                   </p>
                 </div>
 
-                <div className="bg-blue-50 rounded-2xl p-4 text-center border border-blue-100 hover:shadow-md transition">
-                  <div className="text-2xl sm:text-3xl">🌱</div>
-                  <p className="font-bold text-gray-700 mt-2">
+                <div className="group rounded-2xl bg-blue-50 hover:bg-blue-700 p-4 sm:p-5 text-center transition duration-300">
+                  <div className="text-2xl sm:text-3xl group-hover:scale-110 transition">
+                    🌱
+                  </div>
+                  <p className="mt-2 font-bold text-gray-700 group-hover:text-white">
                     परिवर्तन
                   </p>
                 </div>
@@ -219,13 +271,13 @@ export default function Founder() {
               {/* BUTTON */}
               <div className="mt-8">
 
-                <a
+                <Link
                   href="/about"
-                  className="inline-flex items-center gap-2 bg-blue-700 hover:bg-blue-800 text-white px-7 py-3.5 rounded-xl font-bold shadow-lg hover:shadow-xl transition-all"
+                  className="inline-flex items-center gap-3 bg-blue-700 hover:bg-blue-800 text-white px-7 py-3.5 rounded-xl font-bold shadow-lg hover:shadow-xl hover:-translate-y-0.5 transition duration-300"
                 >
                   Read More
                   <span>→</span>
-                </a>
+                </Link>
 
               </div>
 
@@ -236,13 +288,13 @@ export default function Founder() {
         </div>
 
 
-        {/* ================================
-            OUR TEAM
-        ================================= */}
+        {/* =====================================
+            TEAM SECTION
+        ====================================== */}
         <div className="mt-16 md:mt-20">
 
           {/* TEAM HEADER */}
-          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-5 mb-7">
+          <div className="flex flex-col sm:flex-row sm:items-end sm:justify-between gap-5 mb-8">
 
             <div>
 
@@ -255,29 +307,29 @@ export default function Founder() {
               </h3>
 
               <p className="mt-2 text-gray-500">
-                Foundation लाई अघि बढाउने हाम्रो समर्पित टोली
+                संस्थाको सेवा अभियानमा सहकार्य गर्ने हाम्रो टिम
               </p>
 
             </div>
 
 
             {/* ARROWS */}
-            <div className="flex gap-3">
+            <div className="flex items-center gap-3">
 
               <button
                 type="button"
-                onClick={() => scrollSlider("left")}
-                className="w-12 h-12 rounded-full bg-white border border-gray-200 shadow-md hover:bg-blue-700 hover:text-white hover:border-blue-700 transition font-bold text-xl"
-                aria-label="Previous team members"
+                onClick={prevSlide}
+                className="w-11 h-11 rounded-full bg-white border border-gray-200 shadow-md hover:bg-blue-700 hover:text-white hover:border-blue-700 flex items-center justify-center text-xl font-bold transition"
+                aria-label="Previous members"
               >
                 ←
               </button>
 
               <button
                 type="button"
-                onClick={() => scrollSlider("right")}
-                className="w-12 h-12 rounded-full bg-blue-700 text-white shadow-md hover:bg-blue-800 transition font-bold text-xl"
-                aria-label="Next team members"
+                onClick={nextSlide}
+                className="w-11 h-11 rounded-full bg-blue-700 text-white shadow-md hover:bg-blue-800 flex items-center justify-center text-xl font-bold transition"
+                aria-label="Next members"
               >
                 →
               </button>
@@ -287,120 +339,142 @@ export default function Founder() {
           </div>
 
 
-          {/* TEAM SLIDER */}
-          <div
-            ref={sliderRef}
-            className="flex gap-5 overflow-x-auto snap-x snap-mandatory scroll-smooth pb-5"
-            style={{
-              scrollbarWidth: "none",
-              msOverflowStyle: "none",
-            }}
-          >
+          {/* =====================================
+              SLIDER
+          ====================================== */}
+          <div className="overflow-hidden">
 
-            {teamMembers.map((member, index) => (
+            <div
+              className="flex gap-5 transition-transform duration-700 ease-out"
+              style={{
+                transform: `translateX(-${
+                  current * (100 / visibleCount)
+                }%)`,
+              }}
+            >
 
-              <div
-                key={member.name}
-                className="group flex-none w-[280px] sm:w-[310px] md:w-[330px] snap-start"
-              >
+              {members.map((member, index) => (
 
-                <div className="bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-lg hover:shadow-2xl transition-all duration-300 hover:-translate-y-2">
+                <div
+                  key={member.name}
+                  className="shrink-0"
+                  style={{
+                    width:
+                      visibleCount === 1
+                        ? "100%"
+                        : `calc((100% - ${
+                            (visibleCount - 1) * 20
+                          }px) / ${visibleCount})`,
+                  }}
+                >
 
-                  {/* PHOTO */}
-                  <div className="relative h-[300px] sm:h-[320px] bg-blue-50 overflow-hidden">
+                  <div className="group bg-white rounded-3xl overflow-hidden border border-gray-100 shadow-lg hover:shadow-2xl transition-all duration-500 hover:-translate-y-2">
 
-                    <img
-                      src={member.image}
-                      alt={member.name}
-                      loading="lazy"
-                      referrerPolicy="no-referrer"
-                      className="absolute inset-0 w-full h-full object-cover object-top transition-transform duration-700 group-hover:scale-105"
-                    />
+                    {/* MEMBER IMAGE */}
+                    <div className="relative h-72 sm:h-80 bg-gradient-to-b from-blue-50 to-gray-100 overflow-hidden">
 
-                    {/* GRADIENT */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/75 via-transparent to-transparent" />
+                      {/* 
+                        External Blogger image भएकाले
+                        <img> प्रयोग गरिएको छ।
+                      */}
+                      <img
+                        src={member.image}
+                        alt={member.name}
+                        loading="lazy"
+                        className="absolute inset-0 w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700"
+                      />
 
-                    {/* NUMBER */}
-                    <div className="absolute top-4 left-4 w-10 h-10 rounded-full bg-white/95 text-blue-700 flex items-center justify-center font-black shadow-md">
-                      {String(index + 1).padStart(2, "0")}
+                      {/* GRADIENT */}
+                      <div className="absolute inset-x-0 bottom-0 h-32 bg-gradient-to-t from-black/80 to-transparent" />
+
+                      {/* NUMBER */}
+                      <div className="absolute top-4 left-4 w-9 h-9 rounded-full bg-white/95 text-blue-700 flex items-center justify-center font-black text-sm shadow-md">
+                        {String(index + 1).padStart(2, "0")}
+                      </div>
+
+                      {/* NAME ON IMAGE */}
+                      <div className="absolute bottom-5 left-5 right-5">
+
+                        <h4 className="text-xl sm:text-2xl font-black text-white">
+                          {member.name}
+                        </h4>
+
+                        <p className="mt-1 text-yellow-300 font-bold text-sm">
+                          {member.post}
+                        </p>
+
+                      </div>
+
                     </div>
 
-                    {/* NAME ON PHOTO */}
-                    <div className="absolute bottom-5 left-5 right-5">
 
-                      <h4 className="text-2xl font-black text-white">
-                        {member.name}
-                      </h4>
+                    {/* MEMBER FOOTER */}
+                    <div className="p-5 flex items-center justify-between">
 
-                      <p className="text-yellow-300 font-bold mt-1">
-                        {member.post}
-                      </p>
+                      <div>
 
-                    </div>
+                        <p className="text-[11px] text-gray-400 uppercase tracking-widest font-bold">
+                          Radhika Foundation
+                        </p>
 
-                  </div>
+                        <p className="mt-1 text-gray-700 font-bold">
+                          {member.post}
+                        </p>
 
+                      </div>
 
-                  {/* CARD FOOTER */}
-                  <div className="p-5 flex items-center justify-between">
+                      <div className="w-10 h-10 rounded-full bg-blue-50 text-blue-700 flex items-center justify-center group-hover:bg-blue-700 group-hover:text-white transition">
+                        →
+                      </div>
 
-                    <div>
-                      <p className="text-xs text-gray-400 font-bold uppercase tracking-wider">
-                        Radhika Foundation
-                      </p>
-
-                      <p className="text-gray-700 font-bold mt-1">
-                        {member.post}
-                      </p>
-                    </div>
-
-                    <div className="w-11 h-11 rounded-full bg-blue-50 text-blue-700 flex items-center justify-center font-bold group-hover:bg-blue-700 group-hover:text-white transition">
-                      →
                     </div>
 
                   </div>
 
                 </div>
 
-              </div>
+              ))}
 
-            ))}
+            </div>
 
           </div>
 
 
           {/* SLIDER DOTS */}
-          <div className="flex justify-center gap-2 mt-4">
+          <div className="flex justify-center items-center gap-2 mt-7">
 
-            {teamMembers.map((_, index) => (
+            {Array.from({ length: maxIndex + 1 }).map((_, index) => (
 
               <button
                 key={index}
                 type="button"
-                onClick={() => {
-                  if (!sliderRef.current) return;
-
-                  const cardWidth =
-                    sliderRef.current.firstElementChild?.clientWidth || 300;
-
-                  sliderRef.current.scrollTo({
-                    left: index * (cardWidth + 20),
-                    behavior: "smooth",
-                  });
-
-                  setActive(index);
-                }}
-                className={`h-2.5 rounded-full transition-all ${
-                  active === index
+                onClick={() => setCurrent(index)}
+                aria-label={`Go to member slide ${index + 1}`}
+                className={`h-2.5 rounded-full transition-all duration-300 ${
+                  current === index
                     ? "w-8 bg-blue-700"
-                    : "w-2.5 bg-gray-300"
+                    : "w-2.5 bg-gray-300 hover:bg-blue-400"
                 }`}
-                aria-label={`Go to team member ${index + 1}`}
               />
 
             ))}
 
           </div>
+
+        </div>
+
+
+        {/* =====================================
+            BOTTOM MESSAGE
+        ====================================== */}
+        <div className="mt-14 text-center">
+
+          <p className="text-gray-500 text-sm sm:text-base">
+            सेवा, सहयोग र सकारात्मक परिवर्तनका लागि
+            <span className="font-bold text-blue-700">
+              {" "}हामी सँगै अघि बढिरहेका छौँ।
+            </span>
+          </p>
 
         </div>
 
