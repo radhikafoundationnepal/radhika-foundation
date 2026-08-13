@@ -2,6 +2,7 @@ import Hero from "../components/Hero";
 import Impact from "../components/Impact";
 import About from "../components/About";
 import Programs from "../components/Programs";
+import DonateSection from "../components/DonateSection";
 import Services from "../components/Services";
 import ImpactStats from "../components/ImpactStats";
 import Experiences from "../components/Experiences";
