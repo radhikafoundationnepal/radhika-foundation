@@ -1,4 +1,5 @@
 import Hero from "../components/Hero";
+import Impact from "../components/Impact";
 import About from "../components/About";
 import Programs from "../components/Programs";
 import Services from "../components/Services";
@@ -17,6 +18,7 @@ export default function Home() {
     <>
       
       <Hero />
+      <Impact />
 
       <About />
 
