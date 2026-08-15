@@ -3,253 +3,222 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 
-const heroImages = [
-  "/images/hero-bg.jpg",
-  "/images/hero-bg2.jpg",
-  "/images/hero-bg3.jpg",
-  "/images/hero-bg4.jpg",
-  "/images/hero-bg5.jpg",
-  "/images/hero-bg6.jpg",
+const heroSlides = [
+  {
+    image: "/images/hero-bg.jpg",
+    smallTitle: "Welcome to Radhika Foundation Nepal",
+    title: "Together We Can",
+    highlight: "Make a Difference",
+    description:
+      "We are committed to serving humanity through education, care, compassion and community development.",
+  },
+  {
+    image: "/images/hero-bg2.jpg",
+    smallTitle: "Education for Every Child",
+    title: "Every Child Deserves",
+    highlight: "A Better Future",
+    description:
+      "We work to provide education, care and opportunities for children who need support and hope.",
+  },
+  {
+    image: "/images/hero-bg3.jpg",
+    smallTitle: "Serving Humanity with Love",
+    title: "Your Support Can",
+    highlight: "Change a Life",
+    description:
+      "Together, we can bring hope, dignity and positive change to people and communities in need.",
+  },
+  {
+    image: "/images/hero-bg4.jpg",
+    smallTitle: "Building Better Communities",
+    title: "Small Acts of Kindness",
+    highlight: "Create Big Change",
+    description:
+      "Join us in creating a compassionate society through service, empowerment and sustainable development.",
+  },
+  {
+    image: "/images/hero-bg5.jpg",
+    smallTitle: "Be Part of the Change",
+    title: "Give Hope.",
+    highlight: "Give Humanity.",
+    description:
+      "Your time, support and generosity can help us build a brighter future for those who need it most.",
+  },
 ];
 
 export default function Hero() {
-  const [currentImage, setCurrentImage] = useState(0);
-
-  /* =========================
-      AUTOMATIC SLIDESHOW
-  ========================== */
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   useEffect(() => {
-    const interval = setInterval(() => {
-      setCurrentImage((prev) => (prev + 1) % heroImages.length);
+    const timer = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
     }, 5000);
 
-    return () => clearInterval(interval);
+    return () => clearInterval(timer);
   }, []);
 
+  const slide = heroSlides[currentSlide];
+
+  function previousSlide() {
+    setCurrentSlide(
+      (prev) => (prev - 1 + heroSlides.length) % heroSlides.length
+    );
+  }
+
+  function nextSlide() {
+    setCurrentSlide((prev) => (prev + 1) % heroSlides.length);
+  }
+
   return (
-    <section className="relative min-h-[650px] md:min-h-[720px] overflow-hidden">
+    <section className="relative min-h-[650px] overflow-hidden bg-slate-900 md:min-h-[730px]">
 
       {/* =====================================================
           BACKGROUND SLIDES
       ====================================================== */}
 
-      {heroImages.map((image, index) => (
+      {heroSlides.map((item, index) => (
         <div
-          key={image}
-          className={`
-            absolute
-            inset-0
-            bg-cover
-            bg-center
-            transition-all
-            duration-[1500ms]
-            ease-in-out
-            ${
-              currentImage === index
-                ? "opacity-100 scale-100"
-                : "opacity-0 scale-105"
-            }
-          `}
+          key={item.image}
+          className={`absolute inset-0 bg-cover bg-center transition-all duration-[1200ms] ${
+            index === currentSlide
+              ? "scale-100 opacity-100"
+              : "scale-105 opacity-0"
+          }`}
           style={{
-            backgroundImage: `url("${image}")`,
+            backgroundImage: `url("${item.image}")`,
           }}
         />
       ))}
-
 
       {/* =====================================================
           DARK OVERLAY
       ====================================================== */}
 
-      <div className="absolute inset-0 bg-blue-950/60" />
+      <div className="absolute inset-0 bg-black/45" />
 
       {/* =====================================================
-          GRADIENT OVERLAY
+          LEFT GRADIENT
       ====================================================== */}
 
-      <div className="absolute inset-0 bg-gradient-to-b from-blue-950/30 via-blue-900/50 to-blue-950/85" />
+      <div className="absolute inset-0 bg-gradient-to-r from-blue-950/90 via-blue-950/55 to-transparent" />
 
+      {/* =====================================================
+          BOTTOM GRADIENT
+      ====================================================== */}
+
+      <div className="absolute inset-x-0 bottom-0 h-56 bg-gradient-to-t from-black/60 to-transparent" />
 
       {/* =====================================================
           CONTENT
       ====================================================== */}
 
-      <div className="relative z-10 max-w-7xl mx-auto px-6 min-h-[650px] md:min-h-[720px] flex items-center justify-center">
+      <div className="relative z-10 mx-auto flex min-h-[650px] max-w-7xl items-center px-5 sm:px-8 md:min-h-[730px] lg:px-10">
 
-        <div className="text-center max-w-4xl">
+        <div className="max-w-3xl pt-10">
 
-          {/* WELCOME BADGE */}
+          {/* SMALL TITLE */}
 
-          <div className="inline-flex items-center gap-2 bg-white/95 backdrop-blur-sm text-blue-700 px-6 py-3 rounded-full font-bold shadow-xl">
+          <div className="mb-6 inline-flex items-center gap-3">
 
-            <span className="text-xl">
-              🙏
-            </span>
+            <span className="h-[3px] w-12 rounded-full bg-red-500" />
 
-            <span>
-              Welcome to Radhika Foundation Nepal
-            </span>
+            <p className="text-sm font-bold uppercase tracking-[0.18em] text-white sm:text-base">
+              {slide.smallTitle}
+            </p>
 
           </div>
 
+          {/* MAIN TITLE */}
 
-          {/* TITLE */}
+          <h1 className="text-4xl font-black leading-[1.08] text-white drop-shadow-2xl sm:text-5xl md:text-6xl lg:text-7xl">
 
-          <h1 className="mt-8 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black text-white leading-tight drop-shadow-2xl">
-
-            Together We Build
+            {slide.title}
 
             <br />
 
             <span className="text-yellow-300">
-              Better Communities
+              {slide.highlight}
             </span>
 
           </h1>
 
-
           {/* DESCRIPTION */}
 
-          <p className="mt-7 text-base sm:text-lg md:text-xl text-white/90 leading-relaxed max-w-3xl mx-auto drop-shadow-lg">
-
-            Radhika Foundation Nepal is dedicated to education,
-            health, women empowerment, environmental protection
-            and sustainable development.
-
+          <p className="mt-7 max-w-2xl text-base leading-8 text-white/90 sm:text-lg md:text-xl">
+            {slide.description}
           </p>
-
 
           {/* =================================================
               BUTTONS
           ================================================== */}
 
-          <div className="mt-10 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-5">
-
-            {/* DONATE */}
+          <div className="mt-9 flex flex-col gap-4 sm:flex-row">
 
             <Link
               href="/donate"
               className="
-                group
-                bg-red-600
-                hover:bg-red-700
-                text-white
-                px-9
-                py-4
+                inline-flex
+                items-center
+                justify-center
                 rounded-full
+                bg-red-600
+                px-8
+                py-4
+                text-base
                 font-extrabold
-                text-lg
-                shadow-2xl
+                text-white
+                shadow-xl
+                shadow-black/20
                 transition-all
                 duration-300
-                hover:scale-105
                 hover:-translate-y-1
+                hover:bg-red-700
+                hover:shadow-2xl
+                sm:px-9
               "
             >
               ❤️ Donate Now
             </Link>
 
-
-            {/* VOLUNTEER */}
-
-            <Link
-              href="#volunteer"
-              className="
-                bg-white/95
-                hover:bg-white
-                text-blue-700
-                px-9
-                py-4
-                rounded-full
-                font-bold
-                text-lg
-                shadow-2xl
-                transition-all
-                duration-300
-                hover:scale-105
-                hover:-translate-y-1
-              "
-            >
-              🙋 Become a Volunteer
-            </Link>
-
-
-            {/* LEARN MORE */}
-
             <Link
               href="/about"
               className="
+                inline-flex
+                items-center
+                justify-center
+                rounded-full
                 border-2
                 border-white
-                text-white
-                hover:bg-white
-                hover:text-blue-700
-                px-9
+                bg-white/10
+                px-8
                 py-4
-                rounded-full
-                font-bold
-                text-lg
+                text-base
+                font-extrabold
+                text-white
+                backdrop-blur-sm
                 transition-all
                 duration-300
-                hover:scale-105
                 hover:-translate-y-1
+                hover:bg-white
+                hover:text-blue-800
+                sm:px-9
               "
             >
-              Learn More →
+              Discover More →
             </Link>
 
           </div>
 
-
           {/* =================================================
-              TRUST / WORK AREAS
+              TRUST ITEMS
           ================================================== */}
 
-          <div className="mt-12 flex flex-wrap justify-center gap-5 md:gap-8 text-white/95 text-sm md:text-base">
+          <div className="mt-10 flex flex-wrap gap-x-7 gap-y-3 text-sm font-semibold text-white/90">
 
-            <div className="flex items-center gap-2">
-              <span className="text-xl">
-                🎓
-              </span>
-
-              <span className="font-semibold">
-                Education
-              </span>
-            </div>
-
-
-            <div className="flex items-center gap-2">
-              <span className="text-xl">
-                ❤️
-              </span>
-
-              <span className="font-semibold">
-                Health & Care
-              </span>
-            </div>
-
-
-            <div className="flex items-center gap-2">
-              <span className="text-xl">
-                🌱
-              </span>
-
-              <span className="font-semibold">
-                Environment
-              </span>
-            </div>
-
-
-            <div className="flex items-center gap-2">
-              <span className="text-xl">
-                🤝
-              </span>
-
-              <span className="font-semibold">
-                Community
-              </span>
-            </div>
+            <span>✓ Education</span>
+            <span>✓ Community Service</span>
+            <span>✓ Care & Support</span>
+            <span>✓ Humanity</span>
 
           </div>
 
@@ -257,53 +226,113 @@ export default function Hero() {
 
       </div>
 
+      {/* =====================================================
+          PREVIOUS BUTTON
+      ====================================================== */}
+
+      <button
+        type="button"
+        onClick={previousSlide}
+        aria-label="Previous slide"
+        className="
+          absolute
+          left-4
+          top-1/2
+          z-20
+          hidden
+          h-12
+          w-12
+          -translate-y-1/2
+          items-center
+          justify-center
+          rounded-full
+          border
+          border-white/30
+          bg-black/20
+          text-2xl
+          text-white
+          backdrop-blur-sm
+          transition
+          hover:bg-white
+          hover:text-blue-800
+          md:flex
+        "
+      >
+        ←
+      </button>
+
+      {/* =====================================================
+          NEXT BUTTON
+      ====================================================== */}
+
+      <button
+        type="button"
+        onClick={nextSlide}
+        aria-label="Next slide"
+        className="
+          absolute
+          right-4
+          top-1/2
+          z-20
+          hidden
+          h-12
+          w-12
+          -translate-y-1/2
+          items-center
+          justify-center
+          rounded-full
+          border
+          border-white/30
+          bg-black/20
+          text-2xl
+          text-white
+          backdrop-blur-sm
+          transition
+          hover:bg-white
+          hover:text-blue-800
+          md:flex
+        "
+      >
+        →
+      </button>
 
       {/* =====================================================
           SLIDE INDICATORS
       ====================================================== */}
 
-      <div className="absolute bottom-24 md:bottom-28 left-0 right-0 z-20 flex justify-center gap-2">
+      <div className="absolute bottom-10 left-0 right-0 z-20 flex justify-center gap-2">
 
-        {heroImages.map((image, index) => (
+        {heroSlides.map((item, index) => (
           <button
-            key={image}
+            key={item.image}
             type="button"
-            onClick={() => setCurrentImage(index)}
+            onClick={() => setCurrentSlide(index)}
             aria-label={`Go to slide ${index + 1}`}
-            className={`
-              h-2.5
-              rounded-full
-              transition-all
-              duration-500
-              ${
-                currentImage === index
-                  ? "w-8 bg-white"
-                  : "w-2.5 bg-white/50 hover:bg-white/80"
-              }
-            `}
+            className={`h-2 rounded-full transition-all duration-500 ${
+              index === currentSlide
+                ? "w-10 bg-yellow-300"
+                : "w-2 bg-white/50 hover:bg-white"
+            }`}
           />
         ))}
 
       </div>
 
-
       {/* =====================================================
-          BOTTOM CURVE
+          BOTTOM WHITE CURVE
       ====================================================== */}
 
       <div className="absolute bottom-0 left-0 right-0 z-20">
 
         <svg
           viewBox="0 0 1440 100"
-          className="w-full h-20 md:h-24"
+          className="h-14 w-full md:h-20"
           preserveAspectRatio="none"
         >
-
           <path
-            d="M0,60 C360,120 1080,0 1440,60 L1440,100 L0,100 Z"
+            d="M0,70 C300,20 520,100 850,55 C1100,20 1270,25 1440,65 L1440,100 L0,100 Z"
             fill="white"
           />
-
         </svg>
 
       </div>
